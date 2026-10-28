@@ -1,0 +1,1575 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suzuki Violin Tutor</title>
+<meta name="description" content="Learn Suzuki Book 1 pieces: notes, finger placement and bowing, played back slowly.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout: a practice stand. Score across the top, then fingerboard / now-playing / bow side by side; stacks on phones. */
+:root{
+  --paper:#F3F4F1; --surface:#FFFFFF; --ink:#1E2430; --muted:#5D6573; --line:#D8DCD6;
+  --rosin:#C77A00; --rosin-soft:rgba(199,122,0,.16);
+  --down:#B9431B; --up:#1F6F8B;
+  --ebony:#221C18; --ebony-hi:#3A302A; --tape:#E9E2CF; --steel:#C9CCD1; --gut:#C9A55C;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --radius:14px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#14171C; --surface:#1C2027; --ink:#E8EAE6; --muted:#9BA2AD; --line:#2E343D;
+  --rosin:#F0A21E; --rosin-soft:rgba(240,162,30,.18); --down:#EB7A50; --up:#5BB6D6;
+  --ebony:#0E0B09; --ebony-hi:#2A221D; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --paper:#14171C; --surface:#1C2027; --ink:#E8EAE6; --muted:#9BA2AD; --line:#2E343D;
+  --rosin:#F0A21E; --rosin-soft:rgba(240,162,30,.18); --down:#EB7A50; --up:#5BB6D6;
+  --ebony:#0E0B09; --ebony-hi:#2A221D; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:18px 48px;display:grid;gap:18px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--rosin);outline-offset:2px;border-radius:6px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 20px}
+.top .brand{margin-right:auto}
+.brand h1{font-size:clamp(1.6rem,3.6vw,2.3rem);font-weight:800;letter-spacing:-.02em;line-height:1}
+.brand p{margin:.35rem 0 0;color:var(--muted);font-size:.95rem}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+
+[hidden]{display:none!important}
+
+/* song picker */
+.picker{display:grid;gap:10px}
+.books{display:inline-flex;gap:4px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:12px;justify-self:start}
+.book{border:0;background:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:var(--display);font-weight:800;font-size:.95rem;color:var(--muted)}
+.book[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.songs-empty{color:var(--muted);font-size:.92rem;padding:6px 2px}
+.songs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+.song{flex:0 0 auto;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px 7px 8px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:.92rem;white-space:nowrap}
+.song .n{font-family:var(--display);font-weight:800;font-size:.78rem;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--paper);color:var(--muted)}
+.song:hover{border-color:var(--muted)}
+.song[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.song[aria-pressed="true"] .n{background:var(--rosin);color:#1b1205}
+.song.mine .n{font-size:.7rem;box-shadow:inset 0 0 0 1.5px var(--rosin)}
+.song.slot{border-style:dashed;background:transparent;color:var(--muted)}
+.song.slot .n{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+.song.slot .add{font-size:.78rem;font-weight:700;color:var(--rosin)}
+.song.slot:hover{border-color:var(--rosin);color:var(--ink)}
+
+/* panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+.score-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px;margin-bottom:6px}
+.score-head h2{font-size:1.45rem;font-weight:800;letter-spacing:-.01em}
+.meta{color:var(--muted);font-size:.9rem;display:flex;gap:12px;flex-wrap:wrap}
+.meta b{color:var(--ink);font-weight:700}
+.show{margin-left:auto;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.showlabel{font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700;margin-right:2px}
+.chipbtn{border:1.5px solid var(--line);background:var(--paper);color:var(--muted);border-radius:999px;padding:4px 11px;font-size:.84rem;font-weight:700;cursor:pointer;text-decoration:line-through}
+.chipbtn[aria-pressed="true"]{background:var(--surface);color:var(--ink);border-color:var(--muted);text-decoration:none}
+.readnote{margin:2px 0 8px;font-size:.88rem;color:var(--muted)}
+#score.hide-f .fnum,#score.hide-s .slet,#score.hide-b .bd,#score.hide-b .bu{visibility:hidden}
+#score.hide-f .ev.cur .fnum,#score.hide-s .ev.cur .slet,#score.hide-b .ev.cur .bd,#score.hide-b .ev.cur .bu{visibility:visible}
+#score{overflow:auto;color:var(--ink);max-height:min(62vh,700px);overscroll-behavior:contain;scrollbar-width:thin}
+#score svg{display:block}
+.ev{cursor:pointer}
+.ev .hl{fill:transparent;transition:fill .12s}
+@media (hover:hover){ .ev:hover .hl{fill:var(--rosin-soft)} }
+.ev.cur .hl{fill:var(--rosin-soft)}
+.ev.cur .head{fill:var(--rosin)}
+.ev.cur .hollow{stroke:var(--rosin)}
+.ev.cur .fnum{fill:var(--rosin);font-weight:700}
+.fnum{font-family:var(--display);font-weight:600;font-size:14px;fill:var(--ink)}
+.slet{font-size:9.5px;fill:var(--muted);letter-spacing:.04em}
+.bd{fill:var(--down)} .bu{stroke:var(--up);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tsig{font-family:var(--display);font-weight:800;font-size:21px;fill:var(--ink)}
+.barno{font-size:11px;font-style:italic;fill:var(--muted)}
+.art{fill:currentColor}
+.acc{fill:none}
+
+/* transport */
+.transport{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px}
+.btn{border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.95rem}
+@media (hover:hover){ .btn:hover{border-color:var(--muted)} }
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink);min-width:118px;justify-content:center}
+.btn svg{width:16px;height:16px;fill:currentColor}
+.toggle[aria-pressed="true"]{border-color:var(--rosin);background:var(--rosin-soft)}
+.tempo{display:flex;align-items:center;gap:10px;font-size:.92rem;color:var(--muted)}
+.tempo input{accent-color:var(--rosin);width:140px}
+.tempo output{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700;min-width:5.5ch}
+.spacer{flex:1}
+.pos{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+
+/* tuning */
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.tcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:22px}
+.tune h3{font-size:1.1rem;font-weight:800}
+.tsub{font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--muted);margin-left:6px}
+.tnote{font-size:.92rem;color:var(--muted);margin:6px 0 12px;max-width:62ch}
+.strbtns{display:flex;gap:10px;flex-wrap:wrap}
+.strbtn{width:74px;height:74px;border-radius:50%;border:2px solid var(--line);background:var(--surface);cursor:pointer;display:grid;place-content:center;gap:2px;color:var(--ink)}
+.strbtn b{font-family:var(--display);font-size:1.6rem;line-height:1}
+.strbtn small{font-size:.7rem;color:var(--muted);white-space:nowrap}
+.strbtn.first{border-color:var(--muted)}
+.strbtn[aria-pressed="true"]{border-color:var(--rosin);background:var(--rosin-soft);box-shadow:0 0 0 4px var(--rosin-soft)}
+.octrows{display:grid;gap:8px}
+.octrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.92rem}
+.octrow span{flex:1 1 220px}
+.octrow b{font-family:var(--display);display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--paper);border:1px solid var(--line);margin-right:6px}
+
+/* passage practice */
+.passage{display:grid;gap:10px}
+.phead{display:flex;align-items:center;gap:12px}
+.phead h3{font-size:1.1rem;font-weight:800}
+.prow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.pfield{display:inline-flex;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}
+.pfield input{width:4.2em;border:1.5px solid var(--line);background:var(--paper);border-radius:8px;padding:6px 8px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.passage .check{display:inline-flex;align-items:center;gap:6px;font-size:.92rem;color:var(--muted)}
+.passage .check input{accent-color:var(--rosin);width:16px;height:16px}
+.pstatus{margin:0;font-size:.9rem;color:var(--muted)}
+.pstatus b{color:var(--ink)}
+.passpill{font-size:.82rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--rosin-soft);border:1px solid var(--rosin);font-variant-numeric:tabular-nums}
+.passband{fill:var(--rosin-soft);opacity:.55}
+
+/* coach row */
+.coach{display:grid;grid-template-columns:250px minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.label{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;margin-bottom:8px}
+.fb-panel{display:flex;flex-direction:column;align-items:center}
+#fingerboard{width:100%;max-width:230px;height:auto}
+.now-note{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.big{font-family:var(--display);font-weight:800;font-size:4.2rem;line-height:.9;letter-spacing:-.03em}
+.big sub{font-size:1.1rem;color:var(--muted);font-weight:600;letter-spacing:0;vertical-align:baseline;margin-left:2px}
+.on-string{font-size:1.15rem}
+.on-string b{font-family:var(--display)}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 14px;margin:16px 0 0;font-size:.98rem}
+.facts dt{color:var(--muted)}
+.facts dd{margin:0}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.82rem;font-weight:700;background:var(--paper);border:1px solid var(--line)}
+.hint{margin-top:14px;padding:10px 12px;border-radius:10px;background:var(--rosin-soft);font-size:.93rem}
+.hint:empty{display:none}
+.nextline{margin-top:12px;color:var(--muted);font-size:.9rem}
+
+.bowdir{display:flex;align-items:center;gap:14px}
+.bowsym{width:54px;height:54px;flex:0 0 auto;border-radius:12px;display:grid;place-items:center;border:2px solid var(--line)}
+.bowsym.down{border-color:var(--down)} .bowsym.up{border-color:var(--up)}
+.bowdir h3{font-size:1.35rem;font-weight:800}
+.bowdir p{margin:2px 0 0;color:var(--muted);font-size:.93rem}
+#bowsvg{width:100%;height:auto;margin-top:14px;display:block}
+.bow-notes{font-size:.9rem;color:var(--muted);margin-top:8px}
+
+/* tip + editor */
+.tip{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.tip .label{margin:3px 0 0}
+.tip p{margin:0;max-width:75ch}
+details.panel summary{cursor:pointer;font-family:var(--display);font-weight:800;font-size:1.1rem}
+details.panel summary span{font-family:var(--body);font-weight:400;color:var(--muted);font-size:.9rem;margin-left:8px}
+.ed{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;margin-top:14px}
+.builder{display:grid;gap:10px;align-content:start}
+.step{font-family:var(--display);font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px;margin-top:4px}
+.stepn{width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-size:.75rem}
+.muted{color:var(--muted);font-weight:400;font-family:var(--body);font-size:.85rem}
+.seg{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.seglabel{font-size:.85rem;color:var(--muted);margin-right:2px}
+.btn.sm{padding:6px 10px;font-size:.86rem;border-radius:8px}
+.passage .btn.sm{padding:6px 10px;font-size:.86rem;border-radius:8px}
+.btn.sm[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.sm.toggle[aria-pressed="true"]{background:var(--rosin-soft);color:var(--ink);border-color:var(--rosin)}
+.btn.sm.open{border-color:var(--rosin);background:var(--rosin-soft)}
+.ed .check{display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--muted);margin-left:4px}
+.ed .check input{accent-color:var(--rosin);width:16px;height:16px}
+.grid{display:grid;grid-template-columns:34px repeat(4,minmax(0,1fr));gap:4px;background:var(--ebony);padding:8px;border-radius:12px}
+.grid .gh{color:#EDE6D6;font-family:var(--display);font-weight:800;text-align:center;font-size:.95rem;padding:2px 0}
+.grid .gf{color:#B8AE9C;font-size:.78rem;font-weight:700;display:grid;place-items:center}
+.nk{border:1px solid #4A3F37;background:#2E2621;color:#F3EDE2;border-radius:7px;padding:5px 2px;cursor:pointer;line-height:1.1;font-weight:700;font-size:.92rem}
+.nk small{display:block;font-weight:400;font-size:.68rem;color:#B8AE9C}
+.nk:hover{border-color:var(--rosin);background:#3E332B}
+.nk:active{transform:translateY(1px)}
+.nk.out{opacity:.45}
+.nk.tape{border-color:#857865}
+.ed .fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.ed label{display:grid;gap:4px;font-size:.85rem;color:var(--muted)}
+.ed .wide{grid-column:1/-1}
+.ed .half{grid-column:span 2}
+.ed input:not([type=checkbox]),.ed select,.ed textarea{border:1.5px solid var(--line);background:var(--paper);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+.ed textarea{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.88rem;min-height:170px;resize:vertical}
+.ed .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+details.sub{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+details.sub summary{font-family:var(--body);font-weight:700;font-size:.92rem}
+#edBackup{min-height:70px}
+#bkmsg{font-size:.9rem;min-height:1.2em;margin-top:6px}
+body.editing #score{max-height:52vh;overflow-y:auto}
+.badbar{fill:var(--down);opacity:.13}
+.syntax{font-size:.9rem}
+.syntax code{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:.85rem}
+.syntax ul{padding-left:18px;margin:6px 0}
+.syntax li{margin:3px 0}
+#edmsg{font-size:.9rem;min-height:1.3em;margin-top:8px}
+#edmsg.err{color:var(--down)}
+.foot{color:var(--muted);font-size:.85rem;max-width:80ch}
+
+@media (max-width:900px){
+  .ed{grid-template-columns:minmax(0,1fr)}
+  .coach{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fb-panel{grid-row:span 2}
+}
+@media (max-width:620px){
+  #score{max-height:48vh}
+  .transport{position:sticky;bottom:0;z-index:5;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));box-shadow:0 -6px 18px rgba(0,0,0,.12)}
+  .transport .btn{padding:8px 10px;font-size:.88rem}
+  .transport .btn.primary{min-width:96px}
+  .transport #prevBtn,.transport #nextBtn{font-size:0;gap:0}
+  .transport .tempo{order:5;flex:1 1 100%}
+  .transport .tempo input{flex:1;width:auto}
+  .transport .pos{margin-left:auto}
+  .coach{grid-template-columns:minmax(0,1fr)}
+  .fb-panel{grid-row:auto}
+  .ed{grid-template-columns:minmax(0,1fr)}
+  .tcols{grid-template-columns:minmax(0,1fr)}
+  .strbtns{gap:8px}
+  .strbtn{width:62px;height:62px}
+  .strbtn b{font-size:1.35rem}
+  .pfield{font-size:.86rem}
+  .pfield input{width:3.4em;padding:5px 6px}
+  .passage .check{font-size:.86rem}
+  .grid{grid-template-columns:26px repeat(4,minmax(0,1fr))}
+  .ed .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .big{font-size:3.4rem}
+  .tip{grid-template-columns:minmax(0,1fr)}
+  .spacer{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>Suzuki Violin Tutor</h1>
+      <p>Books 1 and 2 · watch the notes, see where each finger goes, follow the bow.</p>
+    </div>
+    <div class="hbtns">
+    <button class="btn toggle" id="tuneBtn" type="button" aria-pressed="false" aria-controls="tunePanel"><svg viewBox="0 0 16 16"><path d="M6 1h4v6.2a3.5 3.5 0 1 1-4 0zM7.5 3v5.3a2 2 0 1 0 1 0V3z"/></svg>Tuning notes</button>
+    <button class="btn toggle" id="editModeBtn" type="button" aria-pressed="false"><svg viewBox="0 0 16 16"><path d="M11.5 1.5l3 3L5 14H2v-3z"/></svg>Editor mode</button>
+    </div>
+    <div class="legend" aria-label="Symbol key">
+      <span><svg width="16" height="14" viewBox="-8 -12 16 14"><path class="bd" d="M-6.5,1 V-10 H6.5 V1 H4.5 V-7 H-4.5 V1Z"/></svg> Down bow</span>
+      <span><svg width="16" height="14" viewBox="-8 -12 16 14"><path class="bu" d="M-5,-10 L0,0 L5,-10"/></svg> Up bow</span>
+      <span><b>0</b> open string · <b>1 2 3 4</b> fingers</span>
+    </div>
+  </header>
+
+  <section class="panel tune" id="tunePanel" hidden aria-labelledby="tuneHead">
+    <div class="tcols">
+      <div>
+        <h3 id="tuneHead">Tuning notes</h3>
+        <p class="tnote">Tune the A string first, then D, G and E. Tap a string to hear a steady note, and tap it again to stop. Turn the peg or fine tuner slowly until your string matches and stops wobbling.</p>
+        <div class="strbtns">
+          <button type="button" class="strbtn" data-drone="55"><b>G</b><small>G3</small></button>
+          <button type="button" class="strbtn" data-drone="62"><b>D</b><small>D4</small></button>
+          <button type="button" class="strbtn first" data-drone="69"><b>A</b><small>440 Hz</small></button>
+          <button type="button" class="strbtn" data-drone="76"><b>E</b><small>E5</small></button>
+        </div>
+      </div>
+      <div>
+        <h3>Octave practice <span class="tsub">from Book 2's ear training</span></h3>
+        <p class="tnote">Play the open string, then the same note an octave higher with your 3rd finger on the next string up. When the 3rd finger is exactly in tune, the open string starts ringing by itself.</p>
+        <div class="octrows">
+          <div class="octrow"><span><b>G</b> open G, 3rd finger G on D</span><button type="button" class="btn sm" data-oct="55">Listen</button><button type="button" class="btn sm toggle" data-octdrone="55" aria-pressed="false">Hold open G</button></div>
+          <div class="octrow"><span><b>D</b> open D, 3rd finger D on A</span><button type="button" class="btn sm" data-oct="62">Listen</button><button type="button" class="btn sm toggle" data-octdrone="62" aria-pressed="false">Hold open D</button></div>
+          <div class="octrow"><span><b>A</b> open A, 3rd finger A on E</span><button type="button" class="btn sm" data-oct="69">Listen</button><button type="button" class="btn sm toggle" data-octdrone="69" aria-pressed="false">Hold open A</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="picker">
+    <div class="books" role="tablist" aria-label="Book">
+      <button type="button" class="book" role="tab" data-book="1">Book 1</button>
+      <button type="button" class="book" role="tab" data-book="2">Book 2</button>
+      <button type="button" class="book" role="tab" data-book="mine">My songs</button>
+    </div>
+    <nav class="songs" id="songs" aria-label="Songs"></nav>
+  </div>
+
+  <section class="panel" aria-labelledby="songTitle">
+    <div class="score-head">
+      <h2 id="songTitle">—</h2>
+      <div class="meta" id="songMeta"></div>
+      <div class="show" role="group" aria-label="Show on the music">
+        <span class="showlabel">Show</span>
+        <button type="button" class="chipbtn" data-show="f" aria-pressed="true" title="Finger numbers under the notes">Fingers</button>
+        <button type="button" class="chipbtn" data-show="s" aria-pressed="true" title="String letters under the finger numbers">Strings</button>
+        <button type="button" class="chipbtn" data-show="b" aria-pressed="true" title="Down-bow and up-bow marks">Bows</button>
+      </div>
+    </div>
+    <p class="readnote" id="readNote" hidden>Reading practice: work out the hidden marks yourself, then play or tap the note to check. The current note always shows them.</p>
+    <div id="score" role="group" aria-label="Sheet music. Click a note to select it."></div>
+  </section>
+
+  <section class="panel transport" aria-label="Playback">
+    <button class="btn" id="prevBtn" title="Previous note (←)"><svg viewBox="0 0 16 16"><path d="M3 2h2v12H3zM14 2v12L6 8z"/></svg>Back</button>
+    <button class="btn primary" id="playBtn" title="Play / pause (space)"><svg viewBox="0 0 16 16" id="playIcon"><path d="M3 1.5v13L14 8z"/></svg><span>Play</span></button>
+    <button class="btn" id="nextBtn" title="Next note (→)">Next<svg viewBox="0 0 16 16"><path d="M11 2h2v12h-2zM2 2v12l8-6z"/></svg></button>
+    <div class="tempo"><label for="tempo">Speed</label><input type="range" id="tempo" min="40" max="200" step="2" value="80"><output id="tempoOut" for="tempo">80 bpm</output></div>
+    <button class="btn toggle" id="countBtn" aria-pressed="true" title="Play one bar of clicks before starting">Count-in</button>
+    <button class="btn toggle" id="clickBtn" aria-pressed="false" title="Metronome click on every beat">Metronome</button>
+    <button class="btn toggle" id="loopBtn" aria-pressed="false" title="Start again at the end">Repeat</button>
+    <span class="spacer"></span>
+    <span class="passpill" id="passPill" hidden></span>
+    <span class="pos" id="pos"></span>
+  </section>
+
+  <section class="panel passage" aria-labelledby="passHead">
+    <div class="phead">
+      <h3 id="passHead">Practise a passage</h3>
+      <button class="btn toggle sm" id="passBtn" type="button" aria-pressed="false">Off</button>
+    </div>
+    <div class="prow">
+      <label class="pfield">Bars <input type="number" id="passFrom" min="1" value="1" inputmode="numeric"></label>
+      <label class="pfield">to <input type="number" id="passTo" min="1" value="4" inputmode="numeric"></label>
+      <button class="btn sm" id="passStart" type="button" title="Start the passage at the bar of the note you're on">Start here</button>
+      <button class="btn sm" id="passEnd" type="button" title="End the passage at the bar of the note you're on">End here</button>
+    </div>
+    <div class="prow">
+      <label class="check"><input type="checkbox" id="passLoop" checked> Loop it</label>
+      <label class="check"><input type="checkbox" id="passSpeed"> Speed up by</label>
+      <label class="pfield"><input type="number" id="passStep" min="1" max="20" value="4" inputmode="numeric"> bpm each time, up to</label>
+      <label class="pfield"><input type="number" id="passTarget" min="40" max="200" value="96" inputmode="numeric"> bpm</label>
+    </div>
+    <p class="pstatus" id="passStatus">Pick the bars that need work, slow the speed down, and press Play. The passage is shaded on the music.</p>
+  </section>
+
+  <section class="coach">
+    <div class="panel fb-panel">
+      <div class="label" style="align-self:flex-start">Left hand · fingerboard</div>
+      <svg id="fingerboard" viewBox="0 0 230 420" role="img" aria-label="Fingerboard showing where to place the finger"></svg>
+    </div>
+
+    <div class="panel" aria-live="polite">
+      <div class="label">This note</div>
+      <div class="now-note"><div class="big" id="bigNote">A</div><div class="on-string" id="onString"></div></div>
+      <dl class="facts">
+        <dt>Finger</dt><dd id="fFinger"></dd>
+        <dt>Length</dt><dd id="fLen"></dd>
+        <dt>Bar</dt><dd id="fBar"></dd>
+      </dl>
+      <div class="hint" id="hint"></div>
+      <div class="nextline" id="nextLine"></div>
+    </div>
+
+    <div class="panel">
+      <div class="label">Right hand · bow</div>
+      <div class="bowdir">
+        <div class="bowsym" id="bowSym"></div>
+        <div><h3 id="bowTitle">Down bow</h3><p id="bowText"></p></div>
+      </div>
+      <svg id="bowsvg" viewBox="0 0 320 120" aria-hidden="true"></svg>
+      <div class="bow-notes" id="bowAmount"></div>
+    </div>
+  </section>
+
+  <section class="panel tip">
+    <div class="label">Practice tip</div>
+    <p id="tipText"></p>
+  </section>
+
+  <details class="panel" id="editor">
+    <summary>Editor mode<span>build your own songs note by note; they're saved in this browser</span></summary>
+    <div class="ed">
+      <div class="builder" aria-label="Note builder">
+        <div class="step"><span class="stepn">1</span> Pick a length</div>
+        <div class="seg" id="lenBtns">
+          <button type="button" class="btn sm" data-len="w">Whole</button>
+          <button type="button" class="btn sm" data-len="h">Half</button>
+          <button type="button" class="btn sm" data-len="q" aria-pressed="true">Quarter</button>
+          <button type="button" class="btn sm" data-len="e">Eighth</button>
+          <button type="button" class="btn sm" data-len="s">16th</button>
+          <button type="button" class="btn sm" data-len="t" title="Triplet eighth: three in one beat">Triplet</button>
+          <button type="button" class="btn sm toggle" id="dotBtn" aria-pressed="false" title="Dotted: half as long again">Dotted ·</button>
+        </div>
+        <div class="step"><span class="stepn">2</span> Tap a note <span class="muted" id="gridKey"></span></div>
+        <div class="grid" id="noteGrid"></div>
+        <div class="step"><span class="stepn">3</span> Add markings</div>
+        <div class="seg">
+          <button type="button" class="btn sm" data-tok="REST">Rest</button>
+          <button type="button" class="btn sm" data-tok="|">Bar line |</button>
+          <button type="button" class="btn sm" id="slurBtn">Start slur (</button>
+          <button type="button" class="btn sm" data-tok=",">Bow lift ’</button>
+          <button type="button" class="btn sm" id="tieBtn" title="Tie the last note to the next one (same pitch, one long note)">Tie ⁀</button>
+          <button type="button" class="btn sm markBtn" data-mark="." title="Staccato: short note">Staccato ·</button>
+          <button type="button" class="btn sm markBtn" data-mark=">" title="Accent: stronger start">Accent &gt;</button>
+          <button type="button" class="btn sm markBtn" data-mark="-" title="Tenuto: full length">Tenuto –</button>
+          <button type="button" class="btn sm markBtn" data-mark="^" title="Trill with the next note up">Trill tr</button>
+        </div>
+        <div class="seg">
+          <span class="seglabel">Next bow</span>
+          <button type="button" class="btn sm bowpick" data-bow="" aria-pressed="true">Auto</button>
+          <button type="button" class="btn sm bowpick" data-bow="D"><svg width="14" height="12" viewBox="-8 -12 16 14"><path class="bd" d="M-6.5,1 V-10 H6.5 V1 H4.5 V-7 H-4.5 V1Z"/></svg> Down</button>
+          <button type="button" class="btn sm bowpick" data-bow="U"><svg width="14" height="12" viewBox="-8 -12 16 14"><path class="bu" d="M-5,-10 L0,0 L5,-10"/></svg> Up</button>
+        </div>
+        <div class="seg">
+          <button type="button" class="btn sm" data-tok="|:">Repeat start |:</button>
+          <button type="button" class="btn sm" data-tok=":|">Repeat end :|</button>
+          <button type="button" class="btn sm" data-tok="FINE">Fine</button>
+          <button type="button" class="btn sm" data-tok="DC">D.C. al Fine</button>
+          <button type="button" class="btn sm" data-tok="[1">1st ending</button>
+          <button type="button" class="btn sm" data-tok="[2">2nd ending</button>
+          <button type="button" class="btn sm" data-tok="]">End ending</button>
+        </div>
+        <div class="seg">
+          <button type="button" class="btn sm" id="edPlay">▶ Play</button>
+          <button type="button" class="btn sm" id="undoBtn">Undo last</button>
+          <button type="button" class="btn sm" id="clearBtn">Clear notes</button>
+          <label class="check"><input type="checkbox" id="edLive" checked> Show on the score as I edit</label>
+        </div>
+      </div>
+      <div>
+        <div class="fields">
+          <label class="half">Title<input id="edTitle" placeholder="e.g. Allegro"></label>
+          <label>Put in<select id="edBook"><option value="mine">My songs</option><option value="1">Book 1</option><option value="2">Book 2</option></select></label>
+          <label>Number<input id="edNum" placeholder="8" maxlength="3"></label>
+          <label>Key<select id="edKey"><option>A</option><option>D</option><option>G</option><option>C</option><option>F</option></select></label>
+          <label>Time<select id="edTime"><option>4/4</option><option>3/4</option><option>2/4</option><option>2/2</option></select></label>
+          <label>Speed<input id="edTempo" type="number" min="40" max="200" value="80"></label>
+          <label class="wide">Notes as code <span class="muted">(new notes go in at the cursor)</span><textarea id="edNotes" spellcheck="false"></textarea></label>
+          <label class="wide">Tip (optional)<input id="edTip" placeholder="What should you listen for?"></label>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="edSave" type="button">Save to my songs</button>
+          <button class="btn" id="edNew" type="button">New song</button>
+          <button class="btn" id="edLoad" type="button">Edit the song on screen</button>
+          <button class="btn" id="edDelete" type="button" hidden>Delete this song</button>
+        </div>
+        <div id="edmsg" role="status"></div>
+        <details class="sub">
+          <summary>Code reference</summary>
+          <div class="syntax">
+            <ul>
+              <li>Pitch + octave + length: <code>A4q</code> <code>C#5h</code> <code>F#5e</code>. Open A is <code>A4</code>; open E is <code>E5</code>.</li>
+              <li>Lengths: <code>w</code> whole, <code>h</code> half, <code>q</code> quarter, <code>e</code> eighth, <code>s</code> sixteenth, <code>t</code> triplet eighth. Add <code>d</code> for dotted: <code>B4dq</code>.</li>
+              <li>A note without <code>#</code> or <code>b</code> is natural, whatever the key: <code>C5q</code> is C natural, <code>Bb4q</code> is B flat.</li>
+              <li><code>|</code> bar line · <code>Rq</code> rest · <code>,</code> bow lift (next note starts down bow).</li>
+              <li>Repeats: <code>|:</code> and <code>:|</code>. <code>FINE</code> after a note, <code>DC</code> at the end.</li>
+              <li>Endings: <code>[1</code> … <code>:|</code> <code>[2</code> … <code>]</code>. Key change: <code>K:D</code> before the first note in the new key.</li>
+              <li>Show a different finger number with <code>/</code>: <code>Bb5e/4</code>.</li>
+              <li>Force a string with <code>@</code>: <code>E5q@A</code> is E with the 4th finger on the A string.</li>
+              <li>Bows alternate by themselves. Force one with <code>:D</code> or <code>:U</code>: <code>E5q:U</code>.</li>
+              <li>Slur notes into one bow with brackets: <code>(A4e B4e)</code>.</li>
+              <li>Tie two notes of the same pitch into one long note with <code>~</code> on the first: <code>B4h~ B4q</code>.</li>
+              <li>Marks go at the end of a note: <code>.</code> staccato, <code>&gt;</code> accent, <code>-</code> tenuto, <code>^</code> trill. <code>A4e.</code> <code>G4q&gt;</code> <code>D5q-.</code> <code>F#5q^</code></li>
+            </ul>
+          </div>
+        </details>
+        <details class="sub">
+          <summary>Back up or move my songs</summary>
+          <p class="muted" style="margin:8px 0">Your songs live only in this browser. Copy the backup text and keep it somewhere safe; paste it here on another device and press Import.</p>
+          <textarea id="edBackup" spellcheck="false" placeholder="Backup text appears here"></textarea>
+          <div class="row">
+            <button class="btn" id="bkCopy" type="button">Copy backup</button>
+            <button class="btn" id="bkImport" type="button">Import</button>
+          </div>
+          <div id="bkmsg" role="status"></div>
+        </details>
+      </div>
+    </div>
+  </details>
+
+  <p class="foot">Notes, fingerings and bowings follow Suzuki Violin School, Volumes 1 and 2. Grace notes, trills, pizzicato and chords are left out of the playback. The pieces Dr. Suzuki composed himself are still under copyright, so they aren't included here. You can type them in from your own book in Editor mode.</p>
+</div>
+
+<script>
+"use strict";
+/* ---------------- song data (notation described in the editor help) ---------------- */
+const TWINKLE_UNITS = "A E F# E D C# B A E D C# B E D C# B A E F# E D C# B A".split(" ");
+const OCT = {A:4,B:4,"C#":5,D:5,E:5,"F#":5};
+function twinkle(pattern){ // pattern: lengths per 2-beat unit; "R" entries are rests
+  const out=[];
+  TWINKLE_UNITS.forEach((p,i)=>{
+    pattern.forEach(l=>out.push(l[0]==="R"?l:p+OCT[p]+l));
+    if(i%2===1) out.push("|");
+  });
+  return out.join(" ");
+}
+const BUILTIN = [
+  { book:1, id:"tw-a", num:"1A", title:"Twinkle Variation A", sub:"“Mississippi Stop-Stop”", key:"A", time:"4/4", tempo:60,
+    notes: twinkle(["s","s","s","s","e.","e."]),
+    tip:"Short bows in the middle of the bow. After each eighth note, stop the bow without pressing, then go on. Keep it smooth and unhurried, with a short pause between strokes." },
+  { book:1, id:"tw-b", num:"1B", title:"Twinkle Variation B", sub:"“Run, run, (stop) run”", key:"A", time:"4/4", tempo:60,
+    notes: twinkle(["e.","e.","Re","e."]),
+    tip:"Two quick notes, a rest, then one more. The bow keeps alternating straight through the rest, so each new pitch starts on the opposite bow. Stop the bow on the string during the rest." },
+  { book:1, id:"tw-c", num:"1C", title:"Twinkle Variation C", sub:"“Run-pony, run-pony”", key:"A", time:"4/4", tempo:60,
+    notes: twinkle(["e.","s","s","e.","s","s"]),
+    tip:"One eighth note and two sixteenths. Give the eighth a little more bow than each sixteenth, and keep the bow speed steady." },
+  { book:1, id:"tw-d", num:"1D", title:"Twinkle Variation D", sub:"Eight sixteenth notes", key:"A", time:"4/4", tempo:56,
+    notes: twinkle(["s","s","s","s","s","s","s","s"]),
+    tip:"Eight even sixteenth notes on each pitch. Use very short strokes near the middle of the bow, and stop the bow without pressure after each note." },
+  { book:1, id:"tw-t", num:"1", title:"Twinkle Theme", sub:"Twinkle, Twinkle, Little Star", key:"A", time:"4/4", tempo:72,
+    notes:"A4q:D. A4q. E5q. E5q. | F#5q. F#5q. E5h- | D5q. D5q. C#5q. C#5q. | B4q. B4q. A4h- | E5q. E5q. D5q. D5q. | C#5q. C#5q. B4h- | E5q. E5q. D5q. D5q. | C#5q. C#5q. B4h- | A4q. A4q. E5q. E5q. | F#5q. F#5q. E5h- | D5q. D5q. C#5q. C#5q. | B4q. B4q. A4h-",
+    tip:"Play strongly, with a long smooth bow. The quarter notes are short and separated; give the half notes a full, even bow. Keep 1, 2 and 3 down on the A string while you play open E." },
+  { book:1, id:"lightly", num:"2", title:"Lightly Row", sub:"Folk song", key:"A", time:"2/2", tempo:84,
+    notes:"E5q:D C#5q C#5h | D5q B4q B4h | A4q B4q C#5q D5q | E5q E5q E5h | E5q C#5q C#5q C#5q | D5q B4q B4q B4q | A4q C#5q E5q E5q | C#5q C#5q C#5h | B4q B4q B4q B4q | B4q C#5q D5h | C#5q C#5q C#5q C#5q | C#5q D5q E5h | E5q C#5q C#5q C#5q | D5q B4q B4q B4q | A4q C#5q E5q E5q | C#5q C#5q C#5h",
+    tip:"The second line starts on an up bow, because the bows simply keep alternating. Half notes get twice as much bow as quarter notes. In the middle part, keep your 1st finger down on B while you repeat it." },
+  { book:1, id:"wind", num:"3", title:"Song of the Wind", sub:"Folk song", key:"A", time:"2/4", tempo:88,
+    notes:"A4e:D B4e C#5e D5e | E5e E5e E5e E5e | F#5e D5e A5e F#5e | E5q Rq , | F#5e:D D5e A5e F#5e | E5q Rq , | E5e:D D5e D5e D5e | D5e C#5e C#5e C#5e | C#5e B4e B4e B4e | A4e C#5e E5q , | E5e:D D5e D5e D5e | D5e C#5e C#5e C#5e | C#5e B4e B4e B4e | A4q Rq :|",
+    tip:"Keep the 1st finger down on F♯ while you reach your 3rd finger to A on the E string. After each rest, set the bow back and start again with a down bow. The whole song is played twice." },
+  { book:1, id:"rhody", num:"4", title:"Go Tell Aunt Rhody", sub:"Folk song", key:"A", time:"2/2", tempo:84,
+    notes:"C#5q:D C#5e B4e A4q A4q | B4q B4q C#5e B4e A4q | E5q E5e D5e C#5q C#5q | B4e A4e B4e C#5e A4h | C#5q C#5e D5e E5q E5q | F#5q F#5q E5e D5e C#5q | C#5q C#5e D5e E5q E5q | F#5q F#5q E5h | C#5q C#5e B4e A4q A4q | B4q B4q C#5e B4e A4q | E5q E5e D5e C#5q C#5q | B4e A4e B4e C#5e A4h",
+    tip:"The eighth notes come in pairs. Use a little less bow for each eighth than for a quarter note, so you don't run out. Listen for C♯ (high 2) sitting right next to D (3)." },
+  { book:1, id:"children", num:"5", title:"O Come, Little Children", sub:"Folk song", key:"A", time:"2/4", tempo:76,
+    notes:"E5e:U | E5q:D C#5e E5e | E5q C#5e E5e | D5q B4e B4e | C#5q Re E5e:U | E5q:D C#5e E5e | E5q C#5e E5e | D5q B4e B4e | C#5q Re E5e:U | B4q:D B4e B4e | D5q D5e D5e | C#5q C#5e C#5e | F#5q Re E5e:U | E5q:D E5e E5e | A5q E5e C#5e | D5q B4e B4e | A4dq :|",
+    tip:"The song starts on an up bow before the first bar line. Each phrase ends with an up bow on open E, so you are ready for a down bow on the next phrase. Play it all twice." },
+  { book:1, id:"may", num:"6", title:"May Song", sub:"Folk song", key:"A", time:"4/4", tempo:92,
+    notes:"A4dq:D C#5e E5q A5q | F#5q A5e F#5e E5h | D5dq E5e C#5q A4q | B4h A4h | E5q E5q D5q D5q | C#5q E5e C#5e B4h | E5q E5q D5q D5q | C#5q E5e C#5e B4h | A4dq C#5e E5q A5q | F#5q A5e F#5e E5h | D5dq E5e C#5q A4q | B4h A4h :|",
+    tip:"Dotted rhythm: long, short. Use a slow down bow on the dotted quarter, then a quick up bow on the eighth. The middle part is soft. Slow down a little the second time through." },
+  { book:1, id:"long", num:"7", title:"Long, Long Ago", sub:"T. H. Bayly", key:"A", time:"2/2", tempo:80,
+    notes:"A4q:D A4e B4e C#5q C#5e D5e | E5q F#5e E5e C#5h | E5q D5e C#5e B4h | D5q C#5e B4e A4h | A4q A4e B4e C#5q C#5e D5e | E5q F#5e E5e C#5h | E5q D5e C#5e B4q C#5e B4e | A4h Rh , | E5q:D D5e C#5e B4q E4e E4e | D5q C#5e B4e A4h | E5q D5e C#5e B4q E4e E4e | D5q C#5e B4e A4h | A4q A4e B4e C#5q C#5e D5e | E5q F#5e E5e C#5h | E5q D5e C#5e B4q C#5e B4e | A4h Rh",
+    tip:"Keep the 1st finger down on B while you play C♯ and D. In the middle part, the two E's on the D string are a string crossing: raise your bow arm for them, then come back to the A string." },
+  { book:1, id:"min1", num:"13", title:"Minuet 1", sub:"J. S. Bach", key:"G", time:"3/4", tempo:108,
+    notes:"D5q:D. (D5q. D5q.) | B4q A4e B4e G4q | A4q (D5q. C5q.) | B4h A4q | D5q C5e B4e A4e G4e | E5q C5e B4e A4e G4e | F#4q E4e D4e F#4q | G4dh :| |: B4q:D E5h | C#5q B4e C#5e A4q | D5q E5q F#5q | E5e D5e C#5e B4e A4q | A5q:D G5e F#5e E5e D5e | B5q:U G5e F#5e E5e D5e | C#5q A4q C#5q | D5dh | D5q C5e B4e A4q | B4q A4e B4e G4q | C5h C5e B4e | A4dh | D5q C5e B4e A4e G4e | E5q C5e B4e A4e G4e | F#4q E4e D4e F#4q | G4dh :|",
+    tip:"G major: C is natural, so use a low 2 next to the 1st finger on the A string. The two slurred D's after the first note are a hooked bow: two separate notes in one up bow, with a small stop between them. In the second half, C♯ is back to a high 2." },
+  { book:1, id:"min2", num:"14", title:"Minuet 2", sub:"J. S. Bach", key:"G", time:"3/4", tempo:100,
+    notes:"G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q E5q E5e G5e | D5q D5q D5e G5e | C5q D5e C5e B4e C5e | A4dh | G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q D5e C5e B4e A4e | D5q C5e B4e A4e G4e | (A4t B4t C5t) (D4q. F#4q.) | G4dh :| |: G4e:D A4e B4e A4e G4e F#4e | G4q (E4q. E4q.) | G5e F#5e E5e G5e F#5e E5e | F#5q (B4q. B4q.) | G5e F#5e E5e G5e F#5e E5e | F#5q (B4q. E5q.) | (F#5t G5t A5t) (B4q. D#5q.) | E5q@A D#5e E5e F#5q | G5q G5e F#5e E5e D5e | E5q E5e D5e C5e B4e | C5q C5e B4e A4e G4e | F#4q E4e F#4e D4q | (A4q:D D4q) D4q. | (B4q D4q) D4q. | C5q D5e C5e B4e C5e | A4dh | G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q D5e C5e B4e A4e | D5q C5e B4e A4e G4e | (A4t B4t C5t) (D4q. F#4q.) | G4dh :|",
+    tip:"The first bar crosses all the way from the D string to the E string and back. Use short strokes. G on the E string is a low 2. Near the end of the second half, the E with a 4 is played with your little finger on the A string." },
+  { book:1, id:"min3", num:"15", title:"Minuet 3", sub:"J. S. Bach", key:"G", time:"3/4", tempo:104,
+    notes:"D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | F#4q (G4e A4e) B4e G4e | A4dh | D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | A4q (B4e A4e) G4e F#4e | G4dh :| |: B5q:D (G5e A5e) B5e G5e | A5q (D5e E5e) F#5e D5e | G5q (E5e F#5e) G5e D5e | C#5q B4e C#5e A4q | (A4e B4e) C#5e D5e E5e F#5e | G5q F#5q E5q | F#5q (A4q. C#5q.) | D5dh | D5q:D G4e F#4e G4q | E5q G4e F#4e G4q | D5q (C5q. B4q.) | (A4e G4e) F#4e G4e A4q | (D4e E4e) F#4e G4e A4e B4e | C5q B4q A4q | (B4e D5e) (G4q. F#4q.) | G4dh :|",
+    tip:"Slurs: two eighth notes in one bow after most of the quarter notes. The second half opens with B on the E string played with the 4th finger; place it carefully, and let the 2nd finger touch the 1st for G. (The book also has a short grace note before the A in bar 8, which isn't played here.)" },
+  { book:1, id:"farmer", num:"16", title:"The Happy Farmer", sub:"R. Schumann", key:"G", time:"4/4", tempo:96,
+    notes:"D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | F#4q E4q D4q Re D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | F#4q E4q D4q Re D4e:U | (C5dq:D> B4e.) (A4dq D4e.) | C5e> B4e A4e G4e A4dq D4e | (G4dq B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | A4q F#4q G4q Re D4e:U | (C5dq:D> B4e.) (A4dq D4e.) | C5e B4e A4e G4e A4dq D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | A4q F#4q G4q Re",
+    tip:"Start on an up bow before the first bar. The dotted quarter and eighth are hooked: one bow, with a small stop before the eighth. In the bars of eighth notes, the bow crosses back to open D every few notes, so keep the crossings small." },
+  { book:1, id:"gavotte", num:"17", title:"Gavotte", sub:"F. J. Gossec", key:"G", time:"2/2", tempo:112,
+    notes:"D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- G5q-. G4q- Rq | C5e:D. D5e. C5e. A4e. B4e. C5e. B4e. G4e. | A4q- D5q-. D4q- Rq | D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- G5q-. G4q- Rq | B4q:D G4e E4e G4q E4e C#4e | D4q- D5q-. D4q- Rq :| A4e:D. C5e. B4e. D5e. C5e. B4e. A4e. G4e. | F#4q A4q C5q Rq | B4e:D. D5e. C5e. E5e. D5e. C5e. B4e. A4e. | G4q B4q D5q Rq | E5e@A:D. D5e. D5e. C5e. C5e. B4e. B4e. A4e. | A4q C5q E5q Rq | D5e:D. B4e. F#4e. G4e. C5e. A4e. E4e. F#4e. | G4q G5q G4q Rq FINE |: B4q:D- B4q- C5q- C5q- | (D5e G5e) F#5e G5e D5q Rq | G4q- G4q- A4q- A4q- | (B4s D5s C#5s D5s) (E5s@A D5s C5s B4s) A4e. D4e. F#4e. D4e. | E4q (G4e. E4e.) E5q E4q | D4q (G4e. D4e.) D5q D4q | C5q D4q B4q D4q | A4q (A4s B4s C5s B4s) A4q Rq :| |: C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. D4q. G4q. Rq | C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. G4q. B4q. Rq | E4q:D- (G4s F#4s E4s D4s) C4q E5q. | D4q- (D4s E4s D4s C4s) B3q D5q. | C5q (E5s@A D5s C5s B4s) A4q F#5q:U. | G5q:U. G4q. G3q. Rq :| DC",
+    tip:"Use short strokes and stop the bow on the string during each rest. E with a 4 is played with the little finger on the A string. After the last section, go back to the beginning (D.C.) and stop at Fine. The book adds grace notes and pizzicato in places; those aren't played here." },
+  { id:"b2-chorus", book:2, num:"1", title:"Chorus from “Judas Maccabaeus”", sub:"G. F. Handel", key:"G", time:"4/4", tempo:80,
+    notes:"D5h:D (B4dq C5e) | D5h G4h | (A4e B4e C5e D5e) (C5q B4q) | A4dh Rq , | (B4e:D C5e D5e E5e@A) (D5q- D5q-) | G5h D5h | C5q B4q (A4dq G4e) | G4dh Rq , | (B4e:D A4e B4e C5e) (B4q- B4q-) | A4h G4h | C5q B4q A4q G4q | F#4dh Rq , | (E5e@A:D D#5e E5e F#5e) (E5q- F#5q-) | G5h E5h | F#5q E5e D5e (C#5dq D5e) | D5dh Rq , | D5h:D (B4dq C5e) | D5h G4h | (A4e B4e C5e D5e) (C5q B4q) | A4dh Rq , | (B4e:D C5e D5e E5e@A) (D5q- D5q-) | G5h D5h | C5q B4q (A4dq G4e-) | G4dh Rq",
+    tip:"Broad, full bows on the half notes. When four eighth notes are slurred, divide the bow into four equal parts. E with a 4 is the little finger on the A string; D♯ in bar 13 is a high 3, right next to it." },
+  { id:"b2-musette", book:2, num:"2", title:"Musette", sub:"J. S. Bach", key:"D", time:"2/2", tempo:96,
+    notes:"|: A4q:D B4e G4e | A4q D5e E5e F#5q E5e C#5e | (D5q A4q) D5q E5e C#5e | D5e E5e F#5e G5e (A5e F#5e) (G5e E5e) | F#5h:U :| |: A5q:D B5e G5e | A5q G5e E5e (F#5e D5e) (E5e@A C#5e) | (D5q A4q) (B4e:U A4e) D5e A4e | (B4e:D A4e) D5e A4e (B4e:U A4e) E5q | E5h:U , E5q:D F#5e D5e | G5q F#5e D5e (B5e G5e) (A5e F#5e) | (G5e:D F#5e) E5e D5e (E5e:U F#5e) G5e F#5e | (E5e:D D5e) C#5e D5e (E5e:U D5e C#5e B4e) | A4h:D , A4q:D B4e G4e | A4q D5e E5e F#5q E5e C#5e | (D5q:U A4q) (F#5e:D C#5e D5e) A4e | (A5e:U C#5e D5e) A4e (F#5e:D C#5e D5e) A4e | D5h:U :|",
+    tip:"Musette imitates bagpipes, so let the open strings ring under the melody. It is in cut time: two big beats per bar. Each half of the piece starts with a half-bar pickup and is played twice. B on the E string is the 4th finger." },
+  { id:"b2-hunters", book:2, num:"3", title:"Hunters' Chorus", sub:"C. M. von Weber", key:"G", time:"2/4", tempo:100,
+    notes:"D4e:U | G4q:D (G4s A4s B4s C5s) | D5q B4e. B4e. | (A4e D5e) A4e. D5e. | (B4s C5s B4s A4s) (G4e:U. D4e.) | G4q:D (G4s A4s B4s C5s) | D5q B4e. B4e. | (A4e D5e) C#5e. E5e. | D5q Re A4e:U | B4q:D B4e. B4e. | G4q G4e. G4e. | C5q C5e. C5e. | A4q Re A4e:U | B4q:D B4e. B4e. | C5q B4e. B4e. | A4q (B4s A4s G4s A4s) | B4q (G4e:U. G4e.) | B4q:D B4e. B4e. | (D5e C5e) B4e. B4e. | (B4s A4s G4s A4s) (B4e:U. A4e.) | G4q Re D4e:U | D4e:D>. D4s D4s D4e>. D4s D4s | D4e>. D4s D4s D4e>. D4s D4s |: G4q:D> D4e. B4e. | G4q> D4e. B4e. | (D5s:D C5s) A4e. (D5s:D C5s) A4e. | (D5s:D C5s) A4e. (D5s:D C5s) A4e. | G4q:D> D4e. B4e. | G4q> D4e. B4e. | (D5s:D C5s) A4e. (D5s:D C5s) A4e. | (D5s:D C5s) A4e. (D5s:D C5s) A4e. | B4e:D> G4s B4s D5q> | B4e> G4s B4s D5q> | [1 B4e:D G4s G4s G4e B4e | A4dq Re :| [2 B4e:D G4s G4s (G4e:U. G4e.) | G4q Re ]",
+    tip:"Crisp, separated notes: stop the bow between the staccato eighths. The two marked up bows in a row are hooked: one up bow, with a stop between the notes. In the repeated section, each slurred pair of sixteenths starts again on a down bow, so lift and reset quickly." },
+  { id:"b2-long", book:2, num:"4", title:"Long, Long Ago", sub:"T. H. Bayly · theme and variation", key:"G", time:"4/4", tempo:84,
+    notes:"G4q:D G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4h | C5q B4e A4e G4h | G4q G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4q B4e A4e | G4h Rh , | D5q:D C5e B4e A4q D4e D4e | C5q B4e A4e G4h | D5q C5e B4e A4q D4e D4e | C5q B4e A4e G4h | G4q G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4q B4e A4e | G4h Rh , | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (B4e. A4e.) | (G4e D4e) (B3e. D4e.) G3q. Rq , | (D5e:D D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (B4e. A4e.) | (G4e D4e) (B3e. D4e.) G3q. Rq",
+    tip:"In the theme, E with a 4 is played with the little finger on the A string. In the variation, every pair of notes is slurred and the second note of each pair is often open D: keep the bow close to the D string so the crossings are small, and play the dotted pairs lightly." },
+  { id:"b2-waltz", book:2, num:"5", title:"Waltz", sub:"J. Brahms", key:"G", time:"3/4", tempo:96,
+    notes:"(B4dq:D G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq F#4e) (F#4e B4e) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | (G4dq:D B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | G4h Rq",
+    tip:"Gentle and singing. Each bar has a long slurred note followed by a slurred pair, so the bow goes down-up in every bar. Keep the 1st finger down on B for the whole opening. E with a 4 is the little finger on the A string. The book adds a small grace note in some bars; it isn't played here." },
+  { id:"b2-bourree", book:2, num:"6", title:"Bourrée", sub:"G. F. Handel", key:"G", time:"4/4", tempo:96,
+    notes:"D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) A4q:U | B4e:D C#5e D5e B4e C#5e D5e E5e C#5e | D5e E5e F#5e D5e E5e F#5e G5e E5e | F#5e G5e A5q (A4q- C#5q-) | D5dh D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) A4q:U | B4e:D C#5e D5e B4e C#5e D5e E5e C#5e | D5e E5e F#5e D5e E5e F#5e G5e E5e | F#5e G5e A5q (A4q- C#5q-) | D5dh , A5q:U | (A5q:D F#5q) (G5e F#5e) E5e D5e | G5q (B5h E5q) | (D#5q E5q) (F#5q G5e A5e) | (G5q E5h) D5q:U | D5q:D (C5e B4e) (C5q C5q) | C5q (B4e A4e) (B4q D5q) | (E5e F#5e) G5e D5e (C5e B4e) A4e G4e | (F#4e G4e) A4e F#4e D4q:U D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) F#4q:U | (G4e:D A4e) B4e G4e A4e B4e C5e A4e | B4e C5e D5e B4e C5e D5e E5e C5e | D5q G5q B4q (A4e G4e) | G4dh , A5q:U | (A5q:D F#5q) (G5e F#5e) E5e D5e | G5q (B5h E5q) | (D#5q E5q) (F#5q G5e A5e) | (G5q E5h) D5q:U | D5q:D (C5e B4e) (C5q C5q) | C5q (B4e A4e) (B4q D5q) | (E5e F#5e) G5e D5e (C5e B4e) A4e G4e | (F#4e G4e) A4e F#4e D4q:U D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) F#4q:U | G4e:D A4e B4e G4e A4e B4e C5e A4e | B4e C5e D5e B4e C5e D5e E5e C5e | D5q G5q B4q (A4e G4e) | G4dh",
+    tip:"Starts on an up bow. The half note after a quarter (E, then G) is an up bow, so use a fast down bow on the quarter and save bow for the long note. B on the E string is the 4th finger. D♯ in the second half is a high 3 on the A string, right next to open E." },
+  { id:"b2-grenadiers", book:2, num:"7", title:"The Two Grenadiers", sub:"R. Schumann", key:"F", time:"4/4", tempo:84,
+    notes:"N:2 Rh Rq A4q:U | D5q:D (D5de:U E5s) F5q E5q | D5h Rq F5q | E5q D5q C#5q (B4de B4s.) | A4dh A4q:U | D5q:D (D5de:U E5s.) F5q E5q | D5h Rq A5q:U | G5q:D F5q E5q D5q | A4q:D. A4h:D A4q:U | (Bb4dq:D Bb4e.) Bb4e Bb4e (C5e G4e) | A4dh A4q | (G4dq:D G4e.) (A4dq E4e.) | F4q:D. F4h:D F4q:U | G4q:D G4e G4e (C5dq C5e.) | A4q A4q (D5dq D5e.) | D5q D5e D5e (D5dq D5e.) | C#5q E5h:D A4q:U | (A4dq:D A4e.) A4e:U A4e A4e D5e | C#5q:U E5h:D A4q:U | A4q:D A4e A4e A4q D5q | C#5q A4q Rq A4q:U | K:D D5q:D D5q E5q E5q | A5dq F#5e D5q D5q- | B4q G5q F#5q E5q | D5h~ D5e Re A4q:U | D5q:D D5q E5q E5q | A5dq F#5e D5q D5q- | B4q G5q F#5q E5q | D5h~ D5e Re (D5e:U E5e) | F#5q:D (F#5de F#5s.) (G5e F#5e) E5e D5e | E5q (E5de E5s.) E5q (E5e:U F#5e) | G5q:D (G5de G5s.) (A5e G5e) F#5e E5e | F#5q (F#5de F#5s.) F#5q A5q:U | A5q:D F#5e D5e A5q F#5e D5e | A5q:D A4h:D A4q:U- | D5q:D D5q E5q E5q | A5dq:D F#5e D5q D5q- | B4q (G5de G5s.) F#5q E5q | D5dh Rq",
+    tip:"The first part is in F major: B is a flat (low 1 on the A string) and F is natural (low 1 on the E string, low 2 on the D string). After the double bar the key changes to D major, so F and C become sharp again. The dotted-eighth and sixteenth pairs are hooked in one bow." },
+  { id:"b2-witches", book:2, num:"8", title:"Theme from “Witches' Dance”", sub:"N. Paganini", key:"D", time:"2/4", tempo:72,
+    notes:"(F#5de:D E5s.) (D5de:U C#5s.) | D5e Re A4q:U>- | (G5de:D F#5s.) (E5de:U D#5s.) | E5e@A Re A4q:U>- | (F#5de:D E5s.) (D5de:U C#5s.) | B4e Re E5q | A4t:D C#5t E5t A5t E5t C#5t | A4q Rq , | (F#5de:D E5s.) (D5de:U C#5s.) | D5e Re A4q:U>- | (G5de:D F#5s.) (E5de:U D#5s.) | E5e@A Re A4q:U>- | (F#5de:D E5s.) (D5de:U C#5s.) | B4e Re C#5q | D5t:D F#4t A4t D5t A4t F#4t | D4q Rq , | A5t:D E5t C#5t A4t C#5t E5t | A5q Rq | D5t:D A4t F#4t D4t F#4t A4t | D5q Rq , | B5t:D G#5t E5t B4t E5t G#5t | B5q G#5q | A5t:D E5t C#5t A4t C#5t E5t | A5q Rq , | (A5de:D G5s.) (F5de:U E5s.) | F5q:D C5q:U- | (Bb5de:D/4 A5s.) (G5de:U F#5s.) | G5q:D A5q:U | (F5de:D E5s.) (D5de:U C#5s.) | D5q:D E5q:U | A4h , | (F#5de:D E5s.) (D5de:U C#5s.) | D5e Re A4q:U>- | (G5de:D F#5s.) (E5de:U D#5s.) | E5e@A Re A4q:U>- | (F#5de:D E5s.) (D5de:U C#5s.) | (B4de:D E5s.) G5t:U. A5t:D. B5t:U. | F#5t:D A5t G5t F#5t E5t D5t | C#5t B4t A4t G4t F#4t E4t | D4t F#4t A4t D5t A4t F#4t | D4q. Rq",
+    tip:"Each dotted pair is hooked: dotted eighth and sixteenth in one bow, with a small stop between them. Triplets are short separate bows. E with a 4 is played on the A string. In the slow middle part, G and F are natural (low 2 and low 1 on the E string), and B♭ is played with the 4th finger." },
+  { id:"b2-mignon", book:2, num:"9", title:"Gavotte from “Mignon”", sub:"A. Thomas", key:"G", time:"2/4", tempo:80,
+    notes:"A4e:D. D5e:U | B4e:D. G4e. D4e. A4e. | G4q (A4s:D B4s D5s C5s) | B4s C5s D5s E5s@A C5s D5s F#5s E5s | D5q- D5e:D. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (D5s E5s@A) C5e. (C5s D5s) B4e. | G#4q/4 , A4e:D. D5e | B4e. G4e. D4e. A4e. | G4q (A4s:D B4s D5s C5s) | B4s C5s D5s E5s@A C5s D5s F#5s E5s | D5q- D5e:D. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | B4e. (B4s D5s) A4e. (A4s B4s) | G4q , A4e:D. G5e. | F#5e. D5e. C#5e. E5e. | D5q (B4s:U D5s) C#5s E5s@A | (E5s@A D5s) F#4s B4s A4e. E4e. | (G4e:U F#4s) Rs A4e:D. A5e. | F#5e (D5y E5y@A D5y) C#5e. E5e. | D5q- (B4s D5s) C#5s E5s@A | A4q- (Bb4s D5s) C#5s E5s@A | A4e (G4s Bb4s) A4s Bb4s G4s Bb4s | A4s Bb4s G4s Bb4s A4s Bb4s G4s Bb4s | A4s B4s A4s B4s A4s B4s A4s B4s | A4s B4s A4s B4s , A4e:D. D5e:U | B4e:D. G4e:U. D4e:D. A4e. | G4q- (A4s:D B4s D5s C5s) | B4s C5s D5s E5s@A C5s D5s F#5s E5s | D5q D5e:D. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | B4e. (B4s D5s) A4e. (A4s B4s) | G4q , D5e:D. G5s:U. Rs | F5q:D (C5s:U D5s) Eb5s/4 F5s | (Eb5s/4 D5s) C5s D5s F4e:U. (F4s Bb4s) | G4e. (G4s C5s) A4e. (A4s D5s) | (Bb4s A4s) Bb4s C5s D5e:D. G5s:U. Rs | F5q:D (C5s:U D5s) Eb5s/4 F5s | (Eb5s/4 D5s) C5s D5s F4e:U. (F4s Bb4s) | G4e. (G4s C5s) A4e. (A4s D5s) | Bb4e A4s:D C5s Bb4s C5s A4s C5s | Bb4s C5s A4s C5s Bb4s C5s A4s C5s | Bb4s C5s Bb4s C5s Bb4s C5s Bb4s C5s | Bb4s C5s Bb4s C5s , A4e:D. D5e:U | B4e:D. G4e. D4e. A4e. | G4q- (A4s:D B4s D5s C5s) | B4s C5s D5s E5s@A C5s D5s F#5s E5s | D5q- D5e:D. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (D5s E5s@A) C5e. (C5s D5s) B4e. | G#4q/4 , A4e:D. D5e | B4e. G4e. D4e. A4e. | G4q (A4s:D B4s D5s C5s) | B4s C5s D5s E5s@A C5s D5s F#5s E5s | D5q- D5e:D. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | (F#5x G5x F#5x G5x F#5s.) E5s. D5e. G5e. | Rh , | B4e:D. (B4s D5s) A4e. (A4s B4s) | G4q D4e:D. G4e. | E4e. C4e. G3e. D4e. | C4q A4e:D. D5e. | B4e. G4e. D4e. A4e. | G4e. D5e B4e. D5e | E5e. D5e. B4e. D5e:U | E5e:U. D5e B4e D5e | E5e Re F#5e Re | G5e Re Rq",
+    tip:"Short, light strokes in the middle of the bow. The quick F♯–G–F♯–G at the start of the turn bars is a fast trill-like figure in one bow. In the middle section, B♭ is a low 1 on the A string, F is natural, and E♭ is played with a low 4th finger. The book has pizzicato and chords in the last bars; here only the top notes are played." },
+  { id:"b2-lully", book:2, num:"10", title:"Gavotte", sub:"J. B. Lully", key:"C", keyName:"A minor", time:"2/2", tempo:100,
+    notes:"A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) A4q (B4e C5e) | D5q (C5e B4e) C5q (B4e A4e) | B4q E4q , A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) A4q. D5q. | E4q. C5q. D4q. G#4q. | A4h@D , C4q:D. G4q:U. | G4q A4q (F4dq E4e) | (F4q G3q) (F4dq E4s F4s) | (E4q G4q) (F4q D4e) C4s D4s | E4h , E4q:D. B4q:U. | B4q (C5e B4e) A4q (G4e F4e) | E4q E5q E4q. A4q. | A4q (B4e C5e) B4q (C5e D5e) | C5q A4q , A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) B4q (C5e D5e) | C5q (B4e A4e) B4e A4e B4e C5e | B4h^~ B4dq A4e:U | A4e:D Re A4q:D~ A4e B4e C5e D5e | E5e F#5e G#5e E5e A5e C6e B5e A5e | G#5e F5e E5e D5e C5e D5e C5e B4e | A4e G4e F4e E4e D4e C5e B4e A4e | E5q E4q A4e B4e C5e D5e | E5e F#5e G#5e E5e A5e C6e B5e A5e | G#5e F5e E5e D5e C5e D5e C5e B4e | A4e G4e F4e E4e D4e C5e B4e A4e | E5q E4q A4e C5e B4e A4e | E5q E4q A4e C5e B4e A4e | E5q (E5e F5e) E5e F5e E5e F5e | D5e E5e@A D5e E5e@A C5e D5e C5e D5e | B4h:D E5h:U | E4h:D , A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) A4q. (B4e C5e) | D5q (C5e B4e) C5q (B4e A4e) | B4q E4q , A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) A4q. D5q | E4q. C5q. D4q. G#4q. | A4h@D , C4q:D. G4q:U. | G4q A4q (F4dq E4e) | (F4q G3q) (F4dq E4s F4s) | (E4q G4q) (F4q D4e) C4s D4s | E4h , E4q:D. B4q:U. | B4q (C5e B4e) A4q (G4e F4e) | E4q E5q E4q. A4q. | A4q (B4e C5e) B4q (C5e D5e) | C5q A4q , A4q:D. E5q:U. | E5q:D (D5e C5e) (D5q:U. E5q.) | C5q:D (B4e A4e) B4q (C5e D5e) | C5q (B4e A4e) B4e A4e B4e C5e | B4h:D^~ B4dq A4e:U | A4h:D",
+    tip:"A minor: no sharps except the G♯ that leads back to A. Notes marked 4 on A (bars 8 and 42) are played with the little finger on the D string. In the fast middle section, C above the staff is an extended 4th finger on the E string: keep the 3rd finger down and reach. The long B in bars 20 and 54 has a trill with C." },
+  { id:"b2-beethoven", book:2, num:"11", title:"Minuet in G", sub:"L. van Beethoven", key:"G", time:"3/4", tempo:100,
+    notes:"(B4de:U C5s) |: (D5de:D> C#5s D5de> C#5s D5de> C#5s) | D5h:U (E5de@A:U B4s) | C5h (D5de A4s) | B4q Rq (G4de:U A4s) | (B4de:D> A#4s B4de> A#4s B4de> A#4s) | B4h A4e:D G4e:U | (G4e F#4e) (F#4e A4e G4e E4e) | [1 D4q Rq (B4de:U C5s) :| N:8 [2 D4q Rq (D5e:U G5e) ] |: (G5q F#5q) G5q | A5h (G5s F#5s E5s D5s) | (C5q B4q) (E5de C5s) | (B4q A4e) Re (G4de:U A4s) | (B4de:D> A#4s B4de> A#4s B4de> A#4s) | B4h (C5de:U G#4s) | A4h (B4de F#4s) | [1 G4q Rq (D5e:U G5e) :| [2 G4q Re FINE (D5e:U C#5e D5e) ] |: N:19 (B4e:D D5e) (G4e. B4e. D4e. B4e.) | (A4e C5e) (F#4e. A4e. D4e. F#4e.) | (G4e F#4e) (G4e. A4e. B4e. C5e.) | (D5e C#5e) (D5e. E5e@A. D5e.) C5e. | (B4e A#4e) (B4e. C5e. B4e.) A4e. | (G4e B4e) (A4e. G4e. F#4e. A4e@D.) | (E4e F#4e) (G4e. E4e. C#4e/4. A3e.) | D4q Re (D5e:U C#5e D5e) :| |: (E5e@A:D C5e A4e) (B4e. A4e. B4e.) | (C5e A4e F#4e) (D5e. C#5e. D5e.) | (E5e@A C5e A4e) (B4e. A4e. B4e.) | (C5e A4e F#4e) (D5e. C#5e. D5e.) | (B4e D5e) (G4e B4e. D4e. G5e.) | (E5e G5e) (C5e. E5e. A4e. C5e.) | (F#4e A4e) (D4e. E4e. F4e. F#4e.) | [1 (A4q@D G4e) (D5e:U C#5e D5e) :| [2 (A4q@D:D G4e) Re DC ]",
+    tip:"Graceful, not heavy. The dotted pairs in bars 1 and 5 are all in one slur: stop the bow slightly on each dotted note. The Trio is faster and uses slurred string crossings down to open D. After the Trio, go back to the beginning (D.C.) and stop at Fine." },
+  { id:"b2-boccherini", book:2, num:"12", title:"Minuet", sub:"L. Boccherini", key:"A", time:"3/4", tempo:96,
+    notes:"|: (A5s:U G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (G#5e E5e) C#5e. A5e. F#5q^ | [1 (E5q:D E4e) Re :| N:8 [2 (E5q:D E4e) Re (C5de:U E4s) ] |: (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (C5de:U E4s) | (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (A5s:D G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (C#5e A4e) F#4e. D5e. B4q^ | [1 (A4q:D A3e) Re (C5de:U E4s) :| N:20 [2 A4q:D A3e:U Re FINE ] |: N:21 K:D D4e:D. E4e. | F#4e. G4e. A4e. B4e. C#5e. D5e. | E5e. (G5s F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e (B4s C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e. (A4s G4s) F#4e (F#4s E4s) D4e Re | F#5e:D. E5e. D5e. C#5e. B4e. A4e. | B4e. B4q> B4q> B4e. | C#5e. E5e@A. (E5e@A D5e) C#5e. B4e. | A4e E4e A3e Re :| |: Rq | N:29 Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. A4q> A4e. A4e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. Re Rq (F#4e:D. G4e.) | A4e. B4e. C#5e. D5e. E5e. F#5e. | G5e:D. (G5s:U F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e:D (B4s:U C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e:D. (F#5s:U G5s) A5e. G5e. F#5e. E5e. | D5e. C#5e. B4e. A4e. G4e. F#4e. | E4e. E4q> E4q> E4e. | F#4e. A4e@D. (A4e@D G4e) F#4e. E4e. | D4e. A3e. D4e. Re DC :|",
+    tip:"Light and elegant; play near the middle of the bow and keep the staccato notes short. D♯ and G♯ marked with 4 use a low little finger. The Trio is in D major (C becomes C♯ and G is natural). After the Trio, go back to the beginning (D.C.) and stop at Fine. The trills in bars 7 and 19 are played; grace notes aren't." },
+];
+
+/* ---------------- music helpers ---------------- */
+const LETTERS="CDEFGAB", BASE={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+const KEYSIG={C:[],G:["F#"],D:["F#","C#"],A:["F#","C#","G#"],F:["Bb"]};
+const SIG_STEPS={F:38,C:35,G:39,B:34}; // treble staff positions for key-signature accidentals
+const keyAcc=(key,letter)=>{ const k=(KEYSIG[key]||[]).find(x=>x[0]===letter); return k?(k[1]==="#"?1:-1):0; };
+const ORD=["open","1st","2nd","3rd","4th"];
+function drawKeySig(g,key,x){ (KEYSIG[key]||[]).forEach((k,i)=>{ const y=yOf(SIG_STEPS[k[0]]); k[1]==="#"?drawSharp(g,x+i*10,y):drawFlat(g,x+i*10,y); }); return (KEYSIG[key]||[]).length*10; }
+const LEN={w:4,h:2,q:1,e:.5,s:.25,t:1/3,x:.125,y:1/6}, LEN_NAME={w:"whole note",h:"half note",q:"quarter note",e:"eighth note",s:"sixteenth note",t:"triplet eighth",x:"thirty-second note",y:"triplet sixteenth"};
+const BEATS={"4/4":4,"3/4":3,"2/4":2,"2/2":4};
+const STRINGS=[{n:"G",midi:55},{n:"D",midi:62},{n:"A",midi:69},{n:"E",midi:76}];
+const FINGER=[
+  {f:0,kind:"open", say:"Open string", how:"No fingers down. Let the string ring."},
+  {f:1,kind:"low",  say:"Low 1", how:"1st finger, a little closer to the scroll than the first tape."},
+  {f:1,kind:"",     say:"1st finger", how:"1st finger on the first tape."},
+  {f:2,kind:"low",  say:"Low 2", how:"2nd finger right next to the 1st finger, touching it."},
+  {f:2,kind:"high", say:"High 2", how:"2nd finger on the second tape, close to where 3 goes."},
+  {f:3,kind:"",     say:"3rd finger", how:"3rd finger on the third tape."},
+  {f:3,kind:"high", say:"High 3", how:"3rd finger stretched a little past the third tape."},
+  {f:4,kind:"",     say:"4th finger", how:"Little finger. It sounds the same as the next open string, so check it against that string."},
+  {f:4,kind:"high", say:"Extended 4", how:"Stretch the little finger a half step past where it plays B, keeping the 3rd finger down."}
+];
+
+function parseSong(text,key0){
+  const toks=text.replace(/\(/g," ( ").replace(/\)/g," ) ").trim().split(/\s+/).filter(Boolean);
+  const evs=[]; let bar=0, inSlur=false, slurStart=false, retake=true, prevBow="U", errs=[], pendStart=false, trip=0;
+  let key=key0||"A", keyChange=false, vol=0, volStart=false, tiePend=false, barSet=null;
+  const re=/^([A-G])(#|b|n)?(\d)(d?)([whqestxy])(@[GDAE])?(?::([DU]))?(?:\/([0-4]))?(?::([DU]))?$/i, rr=/^R(d?)([whqestxy])$/i;
+  const newBar=()=>{ if(evs.length&&evs[evs.length-1].bar===bar) bar++; };
+  const last=()=>evs[evs.length-1];
+  for(const t of toks){
+    const T=t.toUpperCase();
+    if(t==="|"){ newBar(); continue; }
+    if(t==="|:"){ newBar(); pendStart=true; continue; }
+    if(t===":|"){ if(evs.length) last().repEnd=true; newBar(); continue; }
+    if(T==="FINE"){ if(evs.length) last().fine=true; continue; }
+    if(T==="DC"){ if(evs.length) last().dc=true; continue; }
+    if(/^K:[A-G]$/i.test(t)){ const k=t[2].toUpperCase(); if(KEYSIG[k]){ key=k; keyChange=true; } else errs.push(t+" (unknown key)"); continue; }
+    if(/^N:\d+$/i.test(t)){ barSet=+t.slice(2); continue; }
+    if(t==="[1"||t==="[2"){ vol=+t[1]; volStart=true; continue; }
+    if(t==="]"){ vol=0; continue; }
+    if(t===","||t==="'"){ retake=true; if(evs.length) last().lift=true; continue; }
+    if(t==="("){ inSlur=true; slurStart=true; continue; }
+    if(t===")"){ inSlur=false; if(evs.length) last().slurEnd=true; continue; }
+    let m=t.match(rr), ev;
+    if(m){ const l=m[2].toLowerCase(); ev={rest:true,beats:LEN[l]*(m[1]?1.5:1),len:l,dot:!!m[1],bar}; tiePend=false; }
+    else {
+      let core=t, art="", tieMark=false;
+      while(/[.>\-~^]$/.test(core)){ const c=core.slice(-1); if(c==="~") tieMark=true; else art+=c; core=core.slice(0,-1); }
+      m=core.match(re);
+      if(!m){ errs.push(t); continue; }
+      m[10]=tieMark?"~":undefined;
+      const letter=m[1].toUpperCase(), acc=m[2]==="#"?1:m[2]==="b"?-1:0, oct=+m[3];
+      const midi=12*(oct+1)+BASE[letter]+acc;
+      let s = m[6] ? STRINGS.find(x=>x.n===m[6][1].toUpperCase()) : STRINGS.slice().reverse().find(x=>midi>=x.midi);
+      if(!m[6] && s && s.n!=="E" && midi-s.midi>7) s=STRINGS[STRINGS.indexOf(s)+1];
+      if(!s||midi<s.midi||midi-s.midi>8){ errs.push(t+" (not playable there in first position)"); continue; }
+      const semis=midi-s.midi, l=m[5].toLowerCase();
+      let fing=FINGER[semis];
+      if(m[8]!=null && +m[8]!==fing.f){ const o=+m[8]; fing={f:o,kind:"",say:o?ORD[o]+" finger":"Open string",how:o?`Use your ${ORD[o]} finger here, as marked in the book.`:"No fingers down."}; }
+      let bow;
+      if(tiePend) bow=prevBow;
+      else if(m[7]||m[9]) bow=(m[7]||m[9]).toUpperCase();
+      else if(inSlur && !slurStart) bow=prevBow;
+      else bow = retake ? "D" : (prevBow==="D"?"U":"D");
+      ev={letter,acc,oct,midi,str:s.n,semis,fing,beats:LEN[l]*(m[4]?1.5:1),len:l,dot:!!m[4],bow,bar,
+        slurStart, inSlur, step:oct*7+LETTERS.indexOf(letter)};
+      if(tiePend){ ev.tied=true; if(evs.length) last().tieTo=true; }
+      if(m[10]) ev.tie=true;
+      if(art.includes(".")) ev.stacc=true;
+      if(art.includes(">")) ev.accent=true;
+      if(art.includes("^")) ev.trill=true;
+      if(art.includes("-")) ev.ten=true;
+      tiePend=!!m[10];
+      prevBow=bow; retake=false; slurStart=false;
+    }
+    if(ev.len==="t"||ev.len==="y"){ trip++; if(trip%3===2) ev.tripMid=true; } else trip=0;
+    if(pendStart){ ev.repStart=true; pendStart=false; }
+    if(barSet!=null){ ev.barSet=barSet; barSet=null; }
+    ev.key=key; if(keyChange){ ev.keyChange=true; keyChange=false; }
+    if(vol){ ev.volta=vol; if(volStart){ ev.voltaStart=true; volStart=false; } }
+    evs.push(ev);
+  }
+  return {evs,errs};
+}
+/* play order with repeats and D.C. al Fine */
+function buildOrder(evs){
+  const order=[]; let i=0, start=0, dc=false, pass=1, guard=0; const done=new Set();
+  while(i<evs.length && guard++<40000){
+    const ev=evs[i];
+    if(ev.repStart && !done.has("s"+i)) { start=i; }
+    if(ev.volta && ev.volta!==(dc?2:pass)){ i++; continue; }
+    order.push(i);
+    if(dc && ev.fine) break;
+    if(ev.repEnd && !dc && !done.has(i)){ done.add(i); pass=2; i=start; continue; }
+    const nx=evs[i+1];
+    if(!dc && ((ev.repEnd && done.has(i)) || (ev.volta===2 && (!nx||nx.volta!==2)))){ pass=1; start=i+1; }
+    if(ev.dc && !dc){ dc=true; i=0; continue; }
+    i++;
+  }
+  return order;
+}
+function oddBars(evs,time){
+  const per=BEATS[time]||4, bars=[]; evs.forEach((e,i)=>{ (bars[e.bar]=bars[e.bar]||[]).push(i); });
+  const ids=bars.map((b,k)=>b?k:-1).filter(k=>k>=0), out=new Set();
+  ids.forEach((k,j)=>{ if(j===0||j===ids.length-1) return;
+    const ix=bars[k], f=evs[ix[0]], l=evs[ix[ix.length-1]], prev=evs[ix[0]-1], next=evs[ix[ix.length-1]+1];
+    if(f.repStart||l.repEnd||f.volta||l.fine||l.dc||(prev&&(prev.repEnd||prev.fine||prev.volta))||(next&&next.repStart)) return;
+    if(Math.abs(ix.reduce((t,i)=>t+evs[i].beats,0)-per)>1e-6) out.add(k); });
+  return out;
+}
+/* score analysis: book-style bar numbers, beat positions, beam groups and bow strokes */
+let barNo=[], noteNoInOrder=[];
+function analyze(){
+  const per=BEATS[song.time]||4, bars=[];
+  evs.forEach((e,i)=>{ (bars[e.bar]=bars[e.bar]||[]).push(i); });
+  const ids=bars.map((b,k)=>b?k:-1).filter(k=>k>=0);
+  barNo=[]; let n=0, partial=0, shift=0;
+  ids.forEach((k,j)=>{
+    const ix=bars[k], tot=ix.reduce((t,i)=>t+evs[i].beats,0);
+    let off;
+    if(j===0 && tot<per-1e-6){ barNo[k]=0; off=per-tot; partial=0; }          // opening pickup counts as bar 0, like the book
+    else if(partial>0 && Math.abs(partial+tot-per)<1e-6){ barNo[k]=n; off=partial; partial=0; } // second half of a bar split by a repeat sign
+    else { n++; barNo[k]=n; off=0; partial = tot<per-1e-6 ? tot : 0; }
+    ix.forEach(i=>{ evs[i].off=off; off+=evs[i].beats; });
+    const bs=evs[ix[0]].barSet; if(bs!=null) shift=bs-barNo[k]; barNo[k]+=shift;
+    // beam groups: consecutive short notes within one quarter-note beat
+    let g=null;
+    const close=()=>{ if(g&&g.ix.length>1) g.ix.forEach(i=>evs[i].beamG=g); g=null; };
+    ix.forEach(i=>{ const e=evs[i]; delete e.beamG;
+      const beamable=!e.rest && e.beats<1-1e-6 && "estxy".includes(e.len), beat=Math.floor(e.off+1e-6);
+      if(!beamable){ close(); return; }
+      if(g && g.beat!==beat) close();
+      if(!g) g={ix:[],beat,pts:[]};
+      g.ix.push(i); });
+    close();
+  });
+  // beam geometry that only depends on pitch
+  const flagsOf=e=>(e.len==="e"||e.len==="t")?1:(e.len==="s"||e.len==="y")?2:e.len==="x"?3:0;
+  new Set(evs.map(e=>e.beamG).filter(Boolean)).forEach(g=>{
+    const ys=g.ix.map(i=>yOf(evs[i].step)), steps=g.ix.map(i=>evs[i].step), nn=ys.length;
+    g.up = steps.reduce((a,b)=>a+b,0)/nn < 34;
+    g.flags=g.ix.map(i=>flagsOf(evs[i])); g.maxF=Math.max(...g.flags);
+    g.trip=g.ix.some(i=>"ty".includes(evs[i].len));
+    const stem=30+5*(g.maxF-1), sgn=g.up?-1:1;
+    g.s0=Math.max(-7,Math.min(7,ys[nn-1]-ys[0]));
+    const fr=k=>nn>1?k/(nn-1):0;
+    g.A = g.up ? Math.min(...ys.map((y,k)=>y-stem-g.s0*fr(k))) : Math.max(...ys.map((y,k)=>y+stem-g.s0*fr(k)));
+    g.top=Math.min(g.A,g.A+g.s0); g.bottom=Math.max(g.A,g.A+g.s0);
+  });
+  // bow strokes: slurred and tied notes share one stroke, so the bow keeps moving the same way
+  let pos=.15, i=0;
+  while(i<evs.length){
+    const e=evs[i];
+    if(e.rest){ e.bf=e.bt=pos; i++; continue; }
+    const st=[i]; let j=i+1;
+    while(j<evs.length && !evs[j].rest && (evs[j].tied || (evs[j].inSlur && !evs[j].slurStart && evs[j].bow===e.bow))){ st.push(j); j++; }
+    const tot=st.reduce((t,k)=>t+evs[k].beats,0), amt=Math.min(.9,.2*tot+.12), pv=evs[i-1];
+    let from=pos;
+    if(e.bow==="D"){ if(i===0||(pv&&pv.lift)) from=.06; if(from+amt>.95) from=.95-amt; }
+    else if(from-amt<.05) from=.05+amt;
+    let p=from;
+    st.forEach((k,q)=>{ const d=amt*evs[k].beats/tot*(e.bow==="D"?1:-1); Object.assign(evs[k],{bf:p,bt:p+d,strokeAmt:amt,strokeN:st.length,strokeIx:q}); p+=d; });
+    pos=p; i=j;
+  }
+  noteNoInOrder=[]; let c=0; order.forEach((ix,k)=>{ if(!evs[ix].rest) c++; noteNoInOrder[k]=c; });
+}
+function barLabel(ev){ const b=barNo[ev.bar]; return b===0?"pickup":String(b); }
+function nextInOrder(i){ const k=orderPosFor(i); for(let q=k+1;q<order.length;q++){ const j=order[q]; if(!evs[j].rest) return j; } return -1; }
+function upperNeighbor(ev){ // the next note up in the key, used for trills
+  const li=LETTERS.indexOf(ev.letter), nl=LETTERS[(li+1)%7], oct=ev.oct+(li===6?1:0);
+  return {midi:12*(oct+1)+BASE[nl]+keyAcc(ev.key,nl), name:nl+(keyAcc(ev.key,nl)===1?"♯":keyAcc(ev.key,nl)===-1?"♭":"")};
+}
+function noteName(ev,withOct){ return ev.letter+(ev.acc===1?"♯":ev.acc===-1?"♭":"")+(withOct?ev.oct:""); }
+function freq(midi){ return 440*Math.pow(2,(midi-69)/12); }
+
+/* ---------------- state ---------------- */
+const store={ get(k,d){ try{const v=localStorage.getItem(k); return v==null?d:JSON.parse(v);}catch(e){return d;} },
+              set(k,v){ try{localStorage.setItem(k,JSON.stringify(v));}catch(e){} } };
+let mySongs=store.get("svt-mysongs",[]);
+let order=[], opos=0;
+let song=null, evs=[], cur=0, playing=false, tempos=store.get("svt-tempos",{});
+const $=id=>document.getElementById(id);
+
+function allSongs(){ return BUILTIN.concat(mySongs.map(s=>Object.assign({mine:true},s,{num:s.num||"★"}))); }
+
+let shelf=store.get("svt-book","1");
+function bookOf(sg){ return sg.mine ? (sg.book==="1"||sg.book==="2" ? sg.book : "mine") : String(sg.book||1); }
+/* book pieces that aren't built in: shown as empty slots you can fill from your own book */
+const SLOTS={"1":[["8","Allegro"],["9","Perpetual Motion"],["10","Allegretto"],["11","Andantino"],["12","Etude"]]};
+function numKey(n){ const m=String(n||"").match(/^\s*(\d+(?:\.\d+)?)/); return m?+m[1]:Infinity; }
+function shelfList(sh){
+  const list=allSongs().filter(sg=>bookOf(sg)===sh), mine=list.filter(x=>x.mine);
+  (SLOTS[sh]||[]).forEach(([n,t])=>{
+    if(!mine.some(m=>String(m.num)===n||m.title.trim().toLowerCase()===t.toLowerCase())) list.push({slot:true,num:n,title:t,book:sh}); });
+  const late=x=>x.mine||x.slot?1:0;
+  return list.map((x,i)=>({x,i})).sort((a,b)=>(numKey(a.x.num)-numKey(b.x.num))||(late(a.x)-late(b.x))||(a.i-b.i)).map(o=>o.x);
+}
+function renderSongList(){
+  const nav=$("songs"); nav.innerHTML="";
+  document.querySelectorAll(".book").forEach(b=>b.setAttribute("aria-selected",b.dataset.book===shelf?"true":"false"));
+  const list=shelfList(shelf);
+  if(!list.length){ nav.innerHTML='<div class="songs-empty">No songs here yet. Open Editor mode to add one from your book. Songs you put in Book 1 or Book 2 are listed there, in number order.</div>'; return; }
+  list.forEach(s=>{
+    const b=document.createElement("button");
+    if(s.slot){ b.className="song slot"; b.type="button"; b.title=`Add “${s.title}” from your book`;
+      b.innerHTML=`<span class="n">${esc(s.num)}</span>${esc(s.title)}<span class="add">+ Add</span>`;
+      b.onclick=()=>openSlot(s); nav.appendChild(b); return; }
+    b.className="song"+(s.mine?" mine":""); b.type="button";
+    b.setAttribute("aria-pressed", song&&song.id===s.id?"true":"false");
+    b.innerHTML=`<span class="n">${esc(s.num)}</span>${esc(s.title)}`;
+    b.onclick=()=>loadSong(s.id);
+    nav.appendChild(b);
+  });
+  const on=nav.querySelector('[aria-pressed="true"]'); if(on) on.scrollIntoView({block:"nearest",inline:"nearest"});
+}
+document.querySelectorAll(".book").forEach(b=>b.onclick=()=>{ shelf=b.dataset.book; store.set("svt-book",shelf); renderSongList(); });
+function esc(s){ return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+function loadSong(id, temp, atEnd){
+  stop();
+  song = temp || allSongs().find(s=>s.id===id) || BUILTIN.find(b=>b.id==="tw-t");
+  evs = parseSong(song.notes,song.key).evs; order = buildOrder(evs); opos=0; analyze();
+  cur = evs.findIndex(e=>!e.rest); if(cur<0) cur=0;
+  if(atEnd && evs.length) cur=evs.length-1;
+  if(!temp) store.set("svt-song",song.id);
+  $("songTitle").textContent=song.title;
+  const ks=KEYSIG[song.key]||[], kc=[...new Set(evs.filter(e=>e.keyChange).map(e=>e.key))];
+  $("songMeta").innerHTML=`<span>${esc(song.sub||"")}</span><span>Key <b>${esc(song.keyName||song.key+" major")}</b>${ks.length?" ("+ks.map(k=>k[0]+(k[1]==="#"?"♯":"♭")).join(" ")+")":""}${kc.length?", then "+kc.map(k=>"<b>"+k+" major</b>").join(", "):""}</span><span>Time <b>${song.time}</b></span><span><b>${evs.filter(e=>!e.rest).length}</b> notes</span>`;
+  $("tipText").textContent=song.tip||"Play it slowly first. Speed up only when every note is in tune.";
+  const t=tempos[song.id]||song.tempo||80; $("tempo").value=t; $("tempoOut").textContent=t+" bpm";
+  if(!temp){ shelf=bookOf(song); store.set("svt-book",shelf); }
+  loadPassageFor();
+  renderSongList(); renderScore(); drawBoardBase(); select(cur,!!atEnd);
+  $("edDelete").hidden=!mySongs.some(m=>m.id===song.id);
+}
+
+/* ---------------- score rendering ---------------- */
+const NS="http://www.w3.org/2000/svg";
+const CLEF="M434 2Q464 -103 464 -170Q464 -223 427.0 -257.0Q390 -291 337 -291Q287 -291 250.0 -261.5Q213 -232 213 -190Q213 -160 233.5 -133.5Q254 -107 283.5 -107.0Q313 -107 331.5 -128.5Q350 -150 350 -178Q350 -240 280 -240Q298 -268 338 -268Q353 -268 368.5 -263.5Q384 -259 401.0 -248.0Q418 -237 428.5 -213.5Q439 -190 439 -157Q439 -136 411 -6Q389 -12 356 -12Q259 -12 189.5 60.0Q120 132 120 232Q120 267 131.5 303.0Q143 339 157.5 366.5Q172 394 200.5 428.5Q229 463 248.5 483.5Q268 504 303 539Q280 621 280 689Q280 779 313.0 839.5Q346 900 379 900Q389 900 401.5 887.0Q414 874 426.0 851.0Q438 828 446.5 790.5Q455 753 455 710Q455 551 342 447L368 329Q384 332 397 332Q458 332 500.0 282.5Q542 233 542 162Q542 44 434 2ZM426 746Q426 801 394 801Q358 801 333.0 748.0Q308 695 308 630Q308 588 321 557Q359 580 392.5 639.5Q426 699 426 746ZM498 128Q498 183 466.0 216.0Q434 249 383 249L428 23Q498 52 498 128ZM407 17 361 247Q334 241 311.5 214.0Q289 187 289 158Q289 143 295.0 128.5Q301 114 309.5 104.0Q318 94 327.0 86.0Q336 78 342.0 74.5Q348 71 348 71L340 66Q307 75 277.5 106.0Q248 137 248 184Q248 231 277.5 270.5Q307 310 343 323L325 430Q168 299 168 177Q168 104 223.0 55.0Q278 6 348 6Q365 6 407 17Z";
+const TOP=56, SP=10, BOT=TOP+4*SP, LINE_H=168; // staff lines from TOP to BOT
+const yOf=step=>BOT-(step-30)*SP/2;            // E4 (step 30) sits on the bottom line
+let evEls=[];
+function el(tag,attrs,parent){ const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function sharpPath(x,y){ return `M${x-2.2},${y-9}V${y+7.5}M${x+2.2},${y-7.5}V${y+9}`; }
+function drawSharp(g,x,y){
+  el("path",{d:sharpPath(x,y),stroke:"currentColor","stroke-width":1.3,fill:"none"},g);
+  el("path",{d:`M${x-5},${y-1.6}L${x+5},${y-4.6}M${x-5},${y+4.6}L${x+5},${y+1.6}`,stroke:"currentColor","stroke-width":2.6,fill:"none"},g);
+}
+function drawNatural(g,x,y){
+  el("path",{d:`M${x-3},${y-9}V${y+4}L${x+3},${y+2}M${x+3},${y+9}V${y-4}L${x-3},${y-2}`,stroke:"currentColor","stroke-width":1.4,fill:"none"},g);
+}
+function drawFlat(g,x,y){
+  el("path",{d:`M${x-3},${y-11}V${y+4}C${x+6},${y-1} ${x+4},${y-7} ${x-3},${y-2}`,stroke:"currentColor","stroke-width":1.4,fill:"none"},g);
+}
+let noteScale=1;
+function noteW(ev){ return noteScale*(20+24*Math.sqrt(ev.beats))*(ev.showAcc?1.12:1)+(ev.showAcc?8:0); }
+
+function computeAccidentals(){
+  let lastBar=-1, mem={};
+  evs.forEach(ev=>{
+    if(ev.bar!==lastBar){ mem={}; lastBar=ev.bar; }
+    if(ev.rest) return;
+    const k=ev.letter+ev.oct, ka=keyAcc(ev.key,ev.letter);
+    const prev = k in mem ? mem[k] : ka;
+    ev.showAcc = ev.acc!==prev ? (ev.acc===1?"#":ev.acc===-1?"b":"n") : null;
+    mem[k]=ev.acc;
+  });
+}
+
+function renderScore(){
+  computeAccidentals();
+  const box=$("score"); box.innerHTML=""; evEls=[];
+  const W=Math.max(280,box.clientWidth);
+  noteScale = W<520 ? .64 : W<760 ? .82 : 1;
+  const maxKs=Math.max(...[song.key,...evs.map(e=>e.key)].map(k=>(KEYSIG[k]||[]).length));
+  const headW=46+maxKs*10, timeW=26;
+  // measures
+  const bars=[]; evs.forEach((e,i)=>{ (bars[e.bar]=bars[e.bar]||[]).push(i); });
+  const badBars=oddBars(evs,song.time);
+  const measures=bars.filter(Boolean).map(ix=>({ix, w:14+(evs[ix[0]].keyChange?14+((KEYSIG[evs[ix[0]].key]||[]).length+(KEYSIG[keyBefore(ix[0])]||[]).length)*10:0)+(evs[ix[0]].repStart?14:0)+(evs[ix[ix.length-1]].repEnd?10:0)+ix.reduce((a,i)=>a+noteW(evs[i]),0)}));
+  // pack into lines
+  const lines=[]; let line=[], used=0;
+  measures.forEach(m=>{
+    const avail=W-headW-(lines.length===0?timeW:0)-6;
+    if(line.length && used+m.w>avail*1.1){ lines.push(line); line=[]; used=0; }
+    line.push(m); used+=m.w;
+  });
+  if(line.length) lines.push(line);
+  const slurs=[];
+  lines.forEach((ln,li)=>{
+    const svg=el("svg",{width:W,height:LINE_H,viewBox:`0 0 ${W} ${LINE_H}`,fill:"currentColor"},box);
+    const staff=[]; for(let i=0;i<5;i++) staff.push(el("line",{x1:4,x2:W-4,y1:TOP+i*SP,y2:TOP+i*SP,stroke:"currentColor","stroke-width":1,opacity:.75},svg));
+    el("line",{x1:4,x2:4,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":1},svg);
+    const s=.062; el("path",{d:CLEF,transform:`translate(${4},${TOP+3*SP+165*s}) scale(${s},${-s})`},svg);
+    drawKeySig(svg,evs[ln[0].ix[0]].key,44);
+    { const fe=evs[ln[0].ix[0]]; let bn=barNo[fe.bar]; if(li>0 && ln.length>1 && barNo[evs[ln[1].ix[0]].bar]===bn) bn++; // label like the book
+      if(bn>0 && li>0) el("text",{x:4,y:TOP-14,class:"barno"},svg).textContent=bn; }
+    let x=headW;
+    if(li===0){ const [a,b]=song.time.split("/");
+      el("text",{x:x+8,y:TOP+SP*2-3,"text-anchor":"middle",class:"tsig"},svg).textContent=a;
+      el("text",{x:x+8,y:BOT-3,"text-anchor":"middle",class:"tsig"},svg).textContent=b;
+      x+=timeW; }
+    const natural=ln.reduce((a,m)=>a+m.w,0), room=W-x-6;
+    const stretch = (li<lines.length-1 || natural>room*.72) ? room/natural : 1;
+    ln.forEach((m,mi)=>{
+      const e0=evs[m.ix[0]], e1=evs[m.ix[m.ix.length-1]];
+      if(badBars.has(e0.bar)) el("rect",{class:"badbar",x:x+2,y:TOP-6,width:m.w*stretch-4,height:4*SP+12,rx:4},svg);
+      if(inPassage(e0.bar)) el("rect",{class:"passband",x:x,y:2,width:m.w*stretch,height:LINE_H-4},svg);
+      let kx=0;
+      if(e0.keyChange && !(mi===0)){ // cancel old signature, show new one
+        const old=KEYSIG[keyBefore(m.ix[0])]||[], nw=KEYSIG[e0.key]||[];
+        el("line",{x1:x-3,x2:x-3,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":1},svg);
+        let cx=x+8; old.filter(o=>!nw.some(n=>n[0]===o[0])).forEach(o=>{ drawNatural(svg,cx,yOf(SIG_STEPS[o[0]])); cx+=10; });
+        drawKeySig(svg,e0.key,cx); kx=(cx-x)+nw.length*10+4;
+      } else if(e0.keyChange) kx=0;
+      if(e0.voltaStart || (mi===0 && e0.volta)){
+        el("path",{d:`M${x+3},${TOP-26} V${TOP-40} H${x+m.w*stretch-6}`,fill:"none",stroke:"currentColor","stroke-width":1.2},svg);
+        if(e0.voltaStart) el("text",{x:x+7,y:TOP-29,"font-size":12,"font-weight":700},svg).textContent=e0.volta+".";
+      } else if(e0.volta) el("path",{d:`M${x},${TOP-40} H${x+m.w*stretch-6}`,fill:"none",stroke:"currentColor","stroke-width":1.2},svg);
+      if(e0.repStart) drawRepeat(svg,x+kx+(mi===0&&x<=headW+timeW?0:2),"start");
+      let nx=x+kx+(10+(e0.repStart?14:0))*stretch;
+      m.ix.forEach(i=>{ const ev=evs[i], w=noteW(ev)*stretch; drawEvent(svg,ev,i,nx+(ev.showAcc?12:8),w,slurs,li); nx+=w; });
+      x+=m.w*stretch;
+      const last=(li===lines.length-1&&mi===ln.length-1);
+      if(e1.fine) el("text",{x:x-2,y:TOP-26,"text-anchor":"end","font-style":"italic","font-weight":700,"font-size":13},svg).textContent="Fine";
+      if(e1.dc) el("text",{x:x-2,y:TOP-26,"text-anchor":"end","font-style":"italic","font-weight":700,"font-size":13},svg).textContent="D.C. al Fine";
+      if(e1.repEnd){ drawRepeat(svg,x,"end"); if(last) staff.forEach(l=>l.setAttribute("x2",x)); return; }
+      if(e1.fine){ el("line",{x1:x-4,x2:x-4,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":1},svg); el("rect",{x:x-1.5,y:TOP,width:3.5,height:4*SP},svg); if(last) staff.forEach(l=>l.setAttribute("x2",x+2)); return; }
+      el("line",{x1:x,x2:x,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":last?1:1.2},svg);
+      if(last){ el("rect",{x:x+3,y:TOP,width:4.5,height:4*SP},svg); staff.forEach(l=>l.setAttribute("x2",x+7.5)); }
+    });
+  });
+  // slurs (same line only)
+  slurs.forEach(sl=>{ if(sl.a.li!==sl.b.li) return;
+    const svg=sl.a.svg, over=sl.a.down&&sl.b.down;
+    const y= over ? Math.min(sl.a.y,sl.b.y)-8 : Math.min(Math.max(sl.a.y,sl.b.y)+9, BOT+11), dy= over?-7:8;
+    el("path",{d:`M${sl.a.x+(over?3:0)},${y} Q${(sl.a.x+sl.b.x)/2},${y+dy} ${sl.b.x-(over?3:0)},${y}`,fill:"none",stroke:"currentColor","stroke-width":1.4},svg);
+  });
+}
+
+function drawRepeat(svg,x,kind){
+  const dots=dx=>{ el("circle",{cx:x+dx,cy:TOP+SP*1.5,r:2.2},svg); el("circle",{cx:x+dx,cy:TOP+SP*2.5,r:2.2},svg); };
+  if(kind==="start"){ el("rect",{x:x,y:TOP,width:3.5,height:4*SP},svg); el("line",{x1:x+7,x2:x+7,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":1},svg); dots(11.5); }
+  else { el("rect",{x:x-3.5,y:TOP,width:3.5,height:4*SP},svg); el("line",{x1:x-7,x2:x-7,y1:TOP,y2:BOT,stroke:"currentColor","stroke-width":1},svg); dots(-11.5); }
+}
+function keyBefore(i){ for(let j=i-1;j>=0;j--) return evs[j].key; return song.key; }
+let openSlur=null, openTie=null;
+function drawBeams(g,bg){
+  const p=bg.pts, n=p.length, x0=p[0].sx, x1=p[n-1].sx, up=bg.up;
+  const by=x=>bg.A+bg.s0*(x1>x0?(x-x0)/(x1-x0):0);
+  p.forEach(q=>el("line",{x1:q.sx,x2:q.sx,y1:q.y,y2:by(q.sx),stroke:"currentColor","stroke-width":1.4},g));
+  const T=4.6, gap=7, dir=up?1:-1;   // beams stack toward the noteheads
+  const bar=(xa,xb,lev)=>{ const o=lev*gap*dir, ya=by(xa)+o, yb=by(xb)+o, t=T*dir;
+    el("path",{d:`M${xa},${ya} L${xb},${yb} L${xb},${yb+t} L${xa},${ya+t}Z`},g); };
+  bar(x0-.7,x1+.7,0);
+  for(let lev=1;lev<bg.maxF;lev++){
+    for(let k=0;k<n;k++){ if(bg.flags[k]<=lev) continue;
+      const nextOn=k<n-1&&bg.flags[k+1]>lev, prevOn=k>0&&bg.flags[k-1]>lev;
+      if(nextOn) bar(p[k].sx-.7,p[k+1].sx+.7,lev);
+      else if(!prevOn){ const stub=Math.min(10,(x1-x0)/3||10); k<n-1 ? bar(p[k].sx,p[k].sx+stub,lev) : bar(p[k].sx-stub,p[k].sx,lev); }
+    }
+  }
+  if(bg.trip){ const xm=(x0+x1)/2; el("text",{x:xm,y:up?by(xm)-6:by(xm)+16,"text-anchor":"middle","font-size":11,"font-style":"italic","font-weight":700},g).textContent="3"; }
+}
+function drawEvent(svg,ev,i,x,w,slurs,li){
+  const g=el("g",{class:"ev","data-i":i,tabindex:-1},svg);
+  el("rect",{class:"hl",x:x-w/2+2,y:8,width:Math.max(18,w-4),height:LINE_H-14,rx:8},g);
+  g.addEventListener("click",()=>{ if(playing) stop(); const k=order.indexOf(i); if(k>=0) opos=k; select(i,true); previewNote(i); });
+  evEls[i]=g;
+  if(ev.rest){ drawRest(g,x,ev); return; }
+  const y=yOf(ev.step);
+  // ledger lines
+  for(let st=28; st>=ev.step; st-=2) el("line",{x1:x-10,x2:x+10,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1.2},g);
+  for(let st=40; st<=ev.step; st+=2) el("line",{x1:x-10,x2:x+10,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1.2},g);
+  if(ev.showAcc){ const ax=x-15; ev.showAcc==="#"?drawSharp(g,ax,y):ev.showAcc==="n"?drawNatural(g,ax,y):drawFlat(g,ax,y); }
+  const hollow=ev.len==="h"||ev.len==="w";
+  if(hollow){
+    el("ellipse",{class:"hollow",cx:x,cy:y,rx:6.2,ry:4.3,transform:`rotate(-20 ${x} ${y})`,fill:"none",stroke:"currentColor","stroke-width":2.2},g);
+  } else el("ellipse",{class:"head",cx:x,cy:y,rx:6.2,ry:4.4,transform:`rotate(-20 ${x} ${y})`},g);
+  if(ev.dot) el("circle",{cx:x+11,cy:(ev.step%2===0)?y-SP/2+1:y,r:2},g);
+  const bg=ev.beamG;
+  if(bg){ const up=bg.up; bg.pts[bg.ix.indexOf(i)]={sx:up?x+5.6:x-5.6,y}; if(i===bg.ix[bg.ix.length-1]) drawBeams(g,bg); }
+  else if(ev.len!=="w"){
+    const up=ev.step<34, sx=up?x+5.6:x-5.6, ey=up?y-34:y+34;
+    el("line",{x1:sx,x2:sx,y1:y,y2:ey,stroke:"currentColor","stroke-width":1.4},g);
+    const flags=(ev.len==="e"||ev.len==="t")?1:(ev.len==="s"||ev.len==="y")?2:ev.len==="x"?3:0;
+    for(let f=0;f<flags;f++){ const fly=ey+(up?f*7:-f*7);
+      el("path",{d:up?`M${sx},${fly} c1,8 10,9 7,20 c0,-8 -4,-11 -7,-12z`:`M${sx},${fly} c1,-8 10,-9 7,-20 c0,8 -4,11 -7,12z`,stroke:"currentColor","stroke-width":.8},g); }
+  }
+  // articulation: dot (staccato), line (tenuto), wedge (accent), on the side away from the stem
+  let artLow=0;
+  if(ev.stacc||ev.ten||ev.accent){
+    const stemUp = bg ? bg.up : (ev.len==="w" ? false : ev.step<34), dir = stemUp ? 1 : -1;
+    let ay=y+dir*10;
+    const inStaffLine=v=>v>=TOP-1&&v<=BOT+1&&Math.abs((v-TOP)%SP)<2;
+    if(inStaffLine(ay)) ay+=dir*3;
+    if(ev.ten){ el("line",{x1:x-5,x2:x+5,y1:ay,y2:ay,stroke:"currentColor","stroke-width":1.6,class:"art"},g); ay+=dir*6; }
+    if(ev.stacc){ el("circle",{cx:x,cy:ay,r:1.9,class:"art"},g); ay+=dir*7; }
+    if(ev.accent){ const ya=ay+dir*2; el("path",{d:`M${x-5},${ya-3} L${x+5},${ya} L${x-5},${ya+3}`,stroke:"currentColor","stroke-width":1.4,class:"acc"},g); ay+=dir*8; }
+    if(dir>0) artLow=ay;
+  }
+  // bow mark above
+  const by = bg ? (bg.up ? Math.min(TOP-12, bg.top-10-(bg.trip?12:0)) : Math.min(TOP-12, y-14))
+                : Math.min(TOP-12, y-(ev.step>=34?14:44));
+  if(!ev.tied && (!ev.inSlur || ev.slurStart)){
+    if(ev.bow==="D") el("path",{class:"bd",d:`M${x-6},${by} V${by-10} H${x+6} V${by} H${x+4} V${by-7} H${x-4} V${by}Z`},g);
+    else el("path",{class:"bu",d:`M${x-5},${by-11} L${x},${by} L${x+5},${by-11}`},g);
+  }
+  if(ev.lift) el("text",{x:x+w/2-6,y:TOP-14,"font-size":18,"font-weight":700},g).textContent="’";
+  if(ev.trill) el("text",{x,y:by-15,"text-anchor":"middle","font-size":14,"font-style":"italic","font-weight":700,"font-family":"Georgia,serif"},g).textContent="tr";
+  // finger + string below
+  const ny = Math.max(artLow+12, bg && !bg.up ? Math.max(BOT+30, bg.bottom+16+(bg.trip?12:0)) : Math.max(BOT+30, y+(ev.step<34?24:44)));
+  if(!ev.tied){
+    el("text",{class:"fnum",x,y:ny,"text-anchor":"middle"},g).textContent=ev.fing.f+(ev.fing.kind==="low"?"↓":ev.fing.kind==="high"?"↑":"");
+    el("text",{class:"slet",x,y:ny+12,"text-anchor":"middle"},g).textContent=ev.str;
+  }
+  // ties: a curve between two notes of the same pitch, played as one long note
+  if(ev.tied && openTie && openTie.svg===svg){ const up=ev.step<34, ty=up?y+8:y-8, d=up?7:-7;
+    el("path",{d:`M${openTie.x+5},${ty} Q${(openTie.x+x)/2},${ty+d} ${x-5},${ty}`,fill:"none",stroke:"currentColor","stroke-width":1.5},svg); }
+  openTie = ev.tie ? {x,svg} : null;
+  // slur bookkeeping
+  const pt={x,y,down:ev.step>=34,svg,li};
+  if(ev.slurStart) openSlur=pt;
+  if(ev.slurEnd && openSlur){ slurs.push({a:openSlur,b:pt}); openSlur=null; }
+}
+function drawRest(g,x,ev){
+  const m=TOP+2*SP;
+  if(ev.len==="w") el("rect",{x:x-6,y:TOP+SP,width:12,height:5},g);
+  else if(ev.len==="h") el("rect",{x:x-6,y:m-5,width:12,height:5},g);
+  else if(ev.len==="q") el("path",{d:`M${x-2},${m-14} l6,7 -5,6 6,7 c-5,-2 -8,1 -4,6 c-7,-4 -5,-10 1,-8 l-6,-7 5,-6z`},g);
+  else { el("circle",{cx:x-2,cy:m-4,r:2.8},g); el("path",{d:`M${x-3},${m-2} Q${x+1},${m-1} ${x+4},${m-6} L${x-1},${m+10}`,fill:"none",stroke:"currentColor","stroke-width":1.4},g); }
+  if(ev.dot) el("circle",{cx:x+10,cy:m-5,r:2},g);
+}
+
+/* ---------------- fingerboard ---------------- */
+const FB={nut:34, len:880, x:[56,98,140,182], top:20, w:230};
+const fy=s=>FB.nut+FB.len*(1-Math.pow(2,-s/12));
+let fbDyn=null;
+function drawBoardBase(){
+  const svg=$("fingerboard"); svg.innerHTML="";
+  const defs=el("defs",{},svg);
+  const gr=el("linearGradient",{id:"eb",x1:0,x2:1,y1:0,y2:0},defs);
+  el("stop",{offset:0,"stop-color":"var(--ebony)"},gr); el("stop",{offset:.5,"stop-color":"var(--ebony-hi)"},gr); el("stop",{offset:1,"stop-color":"var(--ebony)"},gr);
+  el("path",{d:"M30,30 L200,30 L212,412 L18,412 Z",fill:"url(#eb)"},svg);
+  // tapes (Suzuki-style): 1st finger, high 2, 3rd finger
+  [[2,"1"],[4,"2"],[5,"3"]].forEach(([s,l])=>{ const y=fy(s);
+    el("rect",{x:22,y:y-2,width:186,height:4,fill:"var(--tape)",opacity:.8,rx:1},svg);
+    el("text",{x:10,y:y+4,"font-size":11,fill:"var(--muted)","text-anchor":"middle","font-weight":700},svg).textContent=l; });
+  el("text",{x:10,y:fy(7)+4,"font-size":11,fill:"var(--muted)","text-anchor":"middle","font-weight":700,opacity:.6},svg).textContent="4";
+  el("rect",{x:26,y:24,width:178,height:10,rx:3,fill:"var(--tape)"},svg); // nut
+  const gauges=[3.2,2.6,2,1.4], colors=["var(--gut)","var(--gut)","var(--steel)","var(--steel)"];
+  STRINGS.forEach((s,k)=>{
+    el("line",{id:"str"+k,x1:FB.x[k],x2:FB.x[k]+(k-1.5)*7,y1:30,y2:412,stroke:colors[k],"stroke-width":gauges[k]},svg);
+    el("text",{x:FB.x[k],y:16,"text-anchor":"middle","font-size":14,"font-weight":800,fill:"var(--ink)","font-family":"var(--display)"},svg).textContent=s.n;
+  });
+  // all notes used in the song, faint
+  const seen=new Set();
+  evs.forEach(e=>{ if(e.rest||e.semis===0) return; const k=e.str+e.semis; if(seen.has(k)) return; seen.add(k);
+    const si=STRINGS.findIndex(s=>s.n===e.str), y=fy(e.semis)-6;
+    el("circle",{cx:sx(si,y),cy:y,r:5,fill:"var(--steel)",opacity:.28},svg); });
+  fbDyn=el("g",{},svg);
+}
+const sx=(si,y)=>FB.x[si]+(si-1.5)*7*((y-30)/382);
+function drawBoard(i){
+  if(!fbDyn) return; fbDyn.innerHTML="";
+  STRINGS.forEach((s,k)=>{ const l=$("str"+k); l.style.stroke=""; l.style.filter=""; });
+  const ev=evs[i]; if(!ev||ev.rest) return;
+  const nj=nextInOrder(i), nx=nj<0?null:evs[nj];
+  if(nx && !(nx.str===ev.str&&nx.semis===ev.semis)) ghost(nx);
+  const si=STRINGS.findIndex(s=>s.n===ev.str);
+  const line=$("str"+si); line.style.stroke="var(--rosin)";
+  if(ev.semis===0){
+    el("circle",{cx:FB.x[si],cy:46,r:12,fill:"none",stroke:"var(--rosin)","stroke-width":3},fbDyn);
+    el("text",{x:FB.x[si],y:51,"text-anchor":"middle","font-size":14,"font-weight":800,fill:"var(--rosin)"},fbDyn).textContent="0";
+  } else {
+    const y=fy(ev.semis)-6, x=sx(si,y);
+    el("circle",{cx:x,cy:y,r:14,fill:"var(--rosin)",stroke:"#000","stroke-opacity":.25},fbDyn);
+    el("text",{x,y:y+5,"text-anchor":"middle","font-size":15,"font-weight":800,fill:"#1b1205"},fbDyn).textContent=ev.fing.f;
+    el("text",{x:x+(si<2?-24:24),y:y+4,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--rosin)"},fbDyn).textContent=noteName(ev);
+  }
+}
+function ghost(ev){
+  const si=STRINGS.findIndex(s=>s.n===ev.str);
+  if(ev.semis===0){ el("circle",{cx:FB.x[si],cy:46,r:12,fill:"none",stroke:"var(--steel)","stroke-width":2,"stroke-dasharray":"3 3"},fbDyn); return; }
+  const y=fy(ev.semis)-6;
+  el("circle",{cx:sx(si,y),cy:y,r:13,fill:"none",stroke:"var(--steel)","stroke-width":2,"stroke-dasharray":"3 3"},fbDyn);
+}
+function nextNote(i){ for(let j=i+1;j<evs.length;j++) if(!evs[j].rest) return evs[j]; return null; }
+function prevNote(i){ for(let j=i-1;j>=0;j--) if(!evs[j].rest) return evs[j]; return null; }
+
+/* ---------------- bow panel ---------------- */
+let bowAnim=null;
+function drawBow(p){
+  const svg=$("bowsvg"); svg.innerHTML="";
+  // string: fixed contact at x=160
+  el("line",{x1:160,x2:160,y1:4,y2:116,stroke:"var(--steel)","stroke-width":3},svg);
+  el("text",{x:166,y:112,"font-size":11,fill:"var(--muted)"},svg).textContent="string";
+  // bow geometry: tip at left, frog at right (player's view). contact point p: 0=frog, 1=tip
+  const L=280, tipX=0, contact=160, off=contact-(L - p*L); // x of tip end
+  const g=el("g",{transform:`translate(${off},0)`},svg);
+  el("line",{x1:0,x2:L,y1:62,y2:62,stroke:"var(--tape)","stroke-width":5},g);              // hair
+  el("path",{d:`M0,62 Q${L/2},44 ${L},50`,fill:"none",stroke:"var(--ebony-hi)","stroke-width":4},g); // stick
+  el("rect",{x:L-24,y:48,width:26,height:22,rx:4,fill:"var(--ebony-hi)"},g);              // frog
+  el("text",{x:L-11,y:86,"text-anchor":"middle","font-size":11,fill:"var(--muted)"},g).textContent="frog";
+  el("text",{x:6,y:86,"font-size":11,fill:"var(--muted)"},g).textContent="tip";
+  el("circle",{cx:L-p*L,cy:62,r:5,fill:"var(--rosin)"},g);
+}
+function animateBow(ev,durMs){
+  if(bowAnim) cancelAnimationFrame(bowAnim);
+  if(!ev) return;
+  const from=ev.bf, to=ev.bt;
+  if(ev.rest||from===to){ drawBow(from); return; }
+  const t0=performance.now(), reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const step=t=>{ const k=reduce?1:Math.min(1,(t-t0)/durMs); drawBow(from+(to-from)*k); if(k<1) bowAnim=requestAnimationFrame(step); };
+  bowAnim=requestAnimationFrame(step);
+}
+
+/* ---------------- coach text ---------------- */
+let lastLine=null;
+function keepLineVisible(svg){
+  const box=$("score"), br=box.getBoundingClientRect(), r=svg.getBoundingClientRect();
+  if(box.scrollHeight>box.clientHeight+2){
+    const top=r.top-br.top+box.scrollTop;
+    if(r.top<br.top || r.bottom>br.bottom) box.scrollTo({top:Math.max(0,top-12),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  } else if(r.top<0||r.bottom>innerHeight) svg.scrollIntoView({block:"nearest"});
+}
+function select(i,userAction){
+  if(i<0||i>=evs.length) return;
+  document.querySelectorAll("#score .ev.cur").forEach(x=>x.classList.remove("cur"));
+  cur=i; const g=evEls[i]; if(g){ g.classList.add("cur");
+    const svg=g.ownerSVGElement;
+    if((userAction||playing) && svg!==lastLine){ lastLine=svg; keepLineVisible(svg); } }
+  const ev=evs[i];
+  const k=orderPosFor(i);
+  $("pos").textContent=`Note ${noteNoInOrder[k]||1} of ${noteNoInOrder[noteNoInOrder.length-1]||0}`;
+  $("fBar").textContent=barLabel(ev);
+  const arts=[ev.stacc&&"staccato",ev.ten&&"tenuto",ev.accent&&"accent",ev.trill&&"trill"].filter(Boolean);
+  const lenTxt=(ev.dot?"dotted ":"")+LEN_NAME[ev.len]+` · ${fmtBeats(ev.beats)}`+(arts.length?` · ${arts.join(", ")}`:"");
+  $("fLen").textContent=lenTxt;
+  if(ev.rest){
+    $("bigNote").innerHTML="Rest"; $("onString").textContent=""; $("fFinger").textContent="—";
+    $("hint").textContent="Stop the bow and count. Keep your fingers ready for the next note.";
+    setBow(null); drawBoard(i); nextLine(i); return;
+  }
+  $("bigNote").innerHTML=esc(noteName(ev))+`<sub>${ev.oct}</sub>`;
+  $("onString").innerHTML=`on the <b>${ev.str}</b> string`;
+  $("fFinger").innerHTML=`<span class="chip">${ev.fing.say}</span> ${ev.fing.how}`;
+  const artHint = ev.stacc&&ev.ten ? "Portato (dot and line): lean on the note, then let the bow pause slightly before the next one."
+    : ev.stacc ? (ev.inSlur&&!ev.slurStart ? "Staccato in a slur: stop the bow briefly, then keep going in the same direction." : "Staccato: play it short, then stop the bow on the string.")
+    : ev.ten ? "Tenuto: hold the note for its full length with an even bow."
+    : "";
+  const accHint = ev.accent ? "Accent: start the note with a little extra weight from your index finger." : "";
+  const trHint = ev.trill ? `Trill: move quickly between ${noteName(ev)} and the note above, ${upperNeighbor(ev).name}, by tapping the next finger up, then settle back on ${noteName(ev)}.` : "";
+  $("hint").textContent=[trHint,hintFor(i),artHint,accHint].filter(Boolean).join(" ");
+  setBow(ev); drawBoard(i); nextLine(i);
+  if(!playing) animateBow(ev,600);
+}
+function fmtBeats(b){ if(Math.abs(b-1/3)<1e-6) return "⅓ beat"; if(Math.abs(b-1/6)<1e-6) return "⅙ beat"; if(b===.125) return "⅛ beat"; if(b===.375) return "⅜ beat"; if(b===.75) return "¾ beat"; const s={0.25:"¼",0.5:"½",0.75:"¾",1.5:"1½",3:"3",1:"1",2:"2",4:"4"}[b]||b; return s+(b<=1?" beat":" beats"); }
+function nextLine(i){
+  const nj=nextInOrder(i), nx=nj<0?null:evs[nj];
+  $("nextLine").textContent = nx ? `Next: ${noteName(nx)} on the ${nx.str} string, ${nx.fing.say.toLowerCase()}, ${nx.bow==="D"?"down":"up"} bow` : "Last note. Hold it to the end, then lift the bow.";
+}
+function hintFor(i){
+  const ev=evs[i], pv=prevNote(i), order="GDAE";
+  if(ev.tied) return "This note is tied to the one before: keep holding it without a new bow stroke.";
+  if(pv && pv.str!==ev.str){
+    const higher=order.indexOf(ev.str)>order.indexOf(pv.str);
+    return `String crossing from ${pv.str} to ${ev.str}: ${higher?"lower":"raise"} your bow arm a little so the bow sits on the ${ev.str} string only.`;
+  }
+  if(pv && pv.str===ev.str && pv.semis>ev.semis && ev.semis>0 && pv.fing.f>ev.fing.f) return `Lift finger ${pv.fing.f} only; keep finger ${ev.fing.f} where it already is.`;
+  if(ev.fing.kind==="low") return ev.fing.f===2?"This is a low 2: slide the 2nd finger back so it touches the 1st.":"Low 1: tuck the 1st finger close to the nut.";
+  if(ev.fing.kind==="high" && ev.fing.f===2) return "High 2 sits close to the 3rd finger tape, with a gap between it and 1.";
+  if(ev.lift) return "After this note, lift the bow and set it down again ready for a down bow.";
+  if(ev.beats>=2) return "Long note: move the bow slowly and evenly so it lasts all the way through.";
+  return "";
+}
+function setBow(ev){
+  const sym=$("bowSym"); sym.className="bowsym"+(ev?(ev.bow==="D"?" down":" up"):"");
+  if(!ev){ sym.innerHTML=""; $("bowTitle").textContent="Bow off the string"; $("bowText").textContent="Rest: pause the bow."; $("bowAmount").textContent=""; return; }
+  sym.innerHTML = ev.bow==="D"
+    ? `<svg width="30" height="26" viewBox="-8 -12 16 14"><path class="bd" d="M-6.5,1 V-10 H6.5 V1 H4.5 V-7 H-4.5 V1Z"/></svg>`
+    : `<svg width="30" height="26" viewBox="-8 -12 16 14"><path class="bu" d="M-5,-10 L0,0 L5,-10"/></svg>`;
+  $("bowTitle").textContent = ev.bow==="D" ? "Down bow" : "Up bow";
+  $("bowTitle").style.color = ev.bow==="D" ? "var(--down)" : "var(--up)";
+  $("bowText").textContent = ev.bow==="D" ? "Pull the bow from the frog toward the tip. Your arm opens out." : "Push the bow from the tip back toward the frog. Your arm folds in.";
+  const amt=ev.strokeAmt, many=ev.strokeN>1;
+  const howMuch = amt>.6?"most of the bow":amt>.4?"about half the bow":"a short bow";
+  $("bowAmount").textContent = !many ? `Use ${howMuch} for ${fmtBeats(ev.beats)}.`
+    : ev.strokeIx===0 ? `${ev.strokeN} notes in this one bow: use ${howMuch} and share it out evenly.`
+    : ev.tied ? "Tied: keep the bow moving and don't play the note again."
+    : `Same bow: keep moving ${ev.bow==="D"?"toward the tip":"toward the frog"} (note ${ev.strokeIx+1} of ${ev.strokeN}).`;
+}
+
+/* ---------------- audio ---------------- */
+let ctx=null, master=null, voices=new Set(), sched=[], raf=null, pumpT=null, run=null;
+function audio(){
+  if(!ctx){ const AC=window.AudioContext||window.webkitAudioContext; ctx=new AC();
+    const comp=ctx.createDynamicsCompressor(); comp.connect(ctx.destination);
+    comp.threshold.value=-10; comp.knee.value=6; comp.ratio.value=4; comp.attack.value=.003; comp.release.value=.08; // gentle limiter, no pumping
+    master=ctx.createGain(); master.gain.value=.42; master.connect(comp);
+    // a little body resonance
+    const body=ctx.createBiquadFilter(); body.type="peaking"; body.frequency.value=2800; body.Q.value=1.2; body.gain.value=4;
+    body.connect(master); master._in=body; }
+  if(ctx.state==="suspended") ctx.resume();
+  return ctx;
+}
+function track(o){ voices.add(o); o.onended=()=>voices.delete(o); }
+function playTone(f,t0,dur,soft,legato,accent){
+  /* One bowed note. The envelope is built only from events that are strictly in time order,
+     so short notes start cleanly and end cleanly, with no swell after the note is over. */
+  const o1=ctx.createOscillator(), o2=ctx.createOscillator(), lp=ctx.createBiquadFilter(), env=ctx.createGain();
+  o1.type="sawtooth"; o2.type="sawtooth"; o1.frequency.value=f; o2.frequency.value=f*1.0025;
+  const g2=ctx.createGain(); g2.gain.value=.3;   // quiet second voice: adds warmth without loud beating
+  lp.type="lowpass"; lp.frequency.value=Math.min(4200,f*6); lp.Q.value=.6;
+  const peak=accent?.34:.26, sus=peak*(accent?.7:.8);
+  const a=Math.min(accent?.018:soft?.02:.04, Math.max(.006, dur*.18));      // attack never longer than ~1/5 of the note
+  const tA=t0+a;
+  const relStart = legato ? t0+dur : t0+Math.max(a+.01, dur*.92);           // small gap before the next note unless slurred
+  const tau = legato ? .012 : Math.min(.018, Math.max(.004, dur*.06));       // release time constant
+  env.gain.setValueAtTime(0,t0);
+  env.gain.linearRampToValueAtTime(peak,tA);
+  env.gain.setTargetAtTime(sus,tA,.05);
+  env.gain.setTargetAtTime(0,Math.max(tA+.002,relStart),tau);
+  const stopAt=Math.max(tA,relStart)+tau*7;
+  if(dur>.3){ // vibrato only on longer notes, starting after the note has settled
+    const lfo=ctx.createOscillator(), lg=ctx.createGain(), vs=t0+Math.min(.18,dur*.35);
+    lfo.frequency.value=5.4; lg.gain.setValueAtTime(0,t0); lg.gain.setValueAtTime(0,vs); lg.gain.linearRampToValueAtTime(f*.004,vs+.2);
+    lfo.connect(lg); lg.connect(o1.frequency); lg.connect(o2.frequency); lfo.start(t0); lfo.stop(stopAt); track(lfo);
+  }
+  o1.connect(lp); o2.connect(g2); g2.connect(lp); lp.connect(env); env.connect(master._in);
+  [o1,o2].forEach(o=>{o.start(t0); o.stop(stopAt); track(o);});
+}
+function playTrill(ev,t0,dur,sounding,legato,beat){
+  // fast alternation with the next note up, starting and ending on the main note
+  const up=upperNeighbor(ev).midi, step=Math.max(.055,Math.min(.08,beat/6)), stopAt=t0+Math.min(dur*.8,dur-.08);
+  let t=t0, on=true, n=0;
+  while(t+step<=stopAt || !on){ playTone(freq(on?ev.midi:up),t,step,n>0,true,false); t+=step; on=!on; n++; if(n>200) break; }
+  playTone(freq(ev.midi),t,Math.max(.06,t0+sounding-t),true,legato,false);
+}
+function click(t,accent){
+  const o=ctx.createOscillator(), g=ctx.createGain(); o.type="square"; o.frequency.value=accent?1760:1200;
+  g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(.25,t+.002); g.gain.exponentialRampToValueAtTime(.0001,t+.05);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+.06); track(o);
+}
+function spb(){ return 60/(+$("tempo").value); }
+function previewNote(i){
+  const ev=evs[i]; if(!ev||ev.rest) return; audio();
+  playTone(freq(ev.midi),ctx.currentTime+.02,Math.min(1.6,ev.beats*spb()),false);
+}
+function orderPosFor(i){
+  if(order[opos]===i) return opos;
+  const k=order.indexOf(i); return k<0?0:k;
+}
+/* Playback schedules notes a little ahead of time (about 1.5 s) instead of the whole piece at once,
+   so long pieces start instantly and stay light on tablets and phones. */
+function play(){
+  audio(); stopVoices(); if(typeof stopDrone==="function") stopDrone(); playing=true; setPlayUI();
+  const beat=spb(), num=BEATS[song.time]||4;
+  let t=ctx.currentTime+.12;
+  let startK=orderPosFor(cur), endK=order.length;
+  const pr=passRange();
+  if(pr){ if(startK<pr[0]||startK>pr[1]) startK=pr[0]; endK=pr[1]+1; if(pass.startTempo==null) pass.startTempo=+$("tempo").value; }
+  if(pressed("countBtn")){
+    // one full bar, then keep counting up to the beat the first note falls on,
+    // so an upbeat (pickup) comes in on the last beat instead of on "1"
+    const off=evs[order[startK]]?.off||0, pre=num+off;
+    for(let b=0;b<pre-1e-6;b++) click(t+b*beat,b%num===0);
+    t+=pre*beat;
+  }
+  run={k:startK,startK,endK,t,beat,num,shown:-1,ptr:0,endT:null};
+  passUI();
+  sched=[];
+  pump(); pumpT=setInterval(pump,120);
+  const loop=()=>{
+    const now=ctx.currentTime;
+    if(run.endT!==null && now>=run.endT){ endOfRun(); return; }
+    while(run.ptr+1<sched.length && now>=sched[run.ptr+1].t) run.ptr++;
+    const sj=sched[run.ptr];
+    if(sj && now>=sj.t && run.ptr!==run.shown){ run.shown=run.ptr; opos=sj.k; select(sj.i); animateBow(evs[sj.i], sj.dur*1000*.95); }
+    raf=requestAnimationFrame(loop);
+  };
+  raf=requestAnimationFrame(loop);
+}
+function pump(){
+  if(!run||!ctx) return;
+  const now=ctx.currentTime, horizon=now+2, {beat,num}=run;
+  // if the device was busy and we fell behind, shift the rest of the piece a little later
+  // instead of scheduling notes in the past (which would cut them off or drop them)
+  if(run.k<run.endK && run.t<now+.03){ const lag=now+.06-run.t; run.t+=lag; sched.forEach(e=>{ if(e.k>=run.k) e.t+=lag; }); }
+  while(run.k<run.endK && run.t<horizon){
+    const k=run.k, i=order[k], ev=evs[i], dur=ev.beats*beat;
+    sched.push({i,k,t:run.t,dur});
+    if(!ev.rest && !(ev.tied && k>run.startK)){
+      let total=dur, q=k;                       // a tied chain sounds as one long note
+      while(evs[order[q]].tie && q+1<order.length && evs[order[q+1]].tied){ q++; total+=evs[order[q]].beats*beat; }
+      const nj=order[q+1], nxt=nj!=null?evs[nj]:null, lastE=evs[order[q]];
+      const legato = !lastE.stacc && !!(nxt && !nxt.rest && nxt.inSlur && !nxt.slurStart && lastE.inSlur && nxt.midi!==lastE.midi && nxt.bar-lastE.bar<=1);
+      // staccato: separate the note with a short silence, but keep about two thirds of its value
+      // so the rhythm still reads correctly (an eighth must not sound like a sixteenth)
+      const lastDur=lastE.beats*beat, gap=Math.min(.16,Math.max(.045,lastDur*.32));
+      const sounding = lastE.stacc&&lastE.ten ? total-Math.min(.05,lastDur*.12)
+                     : lastE.stacc ? Math.max(.06,total-gap)
+                     : lastE.ten ? total*1.03 : total;
+      if(ev.trill) playTrill(ev,run.t,dur,sounding,legato,beat);
+      else playTone(freq(ev.midi),run.t,sounding,ev.inSlur&&!ev.slurStart,legato,ev.accent);
+    }
+    if(pressed("clickBtn")){ const p=ev.off||0; for(let b=Math.ceil(p-1e-6); b<p+ev.beats-1e-6; b++) click(run.t+(b-p)*beat, ((b%num)+num)%num===0); }
+    run.t+=dur; run.k++;
+  }
+  if(run.k>=run.endK && run.endT===null) run.endT=run.t;
+  if(sched.length>400){ const cut=sched.length-200; sched.splice(0,cut); run.ptr=Math.max(0,run.ptr-cut); run.shown-=cut; }
+}
+function endOfRun(){
+  const pr=passRange();
+  if(pr){
+    if(passOpts.loop){
+      pass.round++;
+      if(passOpts.speed){ const target=Math.min(+$("tempo").max,+$("passTarget").value||200), v=Math.min(target,+$("tempo").value+passOpts.step); $("tempo").value=v; $("tempoOut").textContent=v+" bpm"; }
+      opos=pr[0]; cur=order[pr[0]]; play(); return;
+    }
+    stop(); opos=pr[0]; select(order[pr[0]]); pass.round=1; passUI(); return;
+  }
+  opos=0; if(pressed("loopBtn")){ cur=firstNote(); play(); } else { stop(); select(firstNote()); }
+}
+function firstNote(){ const f=evs.findIndex(e=>!e.rest); return f<0?0:f; }
+function stopVoices(){ voices.forEach(v=>{try{v.stop();}catch(e){}}); voices.clear(); }
+function stop(){ if(raf) cancelAnimationFrame(raf); raf=null; clearInterval(pumpT); pumpT=null; run=null; if(ctx) stopVoices(); playing=false; setPlayUI(); if(typeof passUI==='function' && song) passUI(); }
+function setPlayUI(){
+  $("playBtn").querySelector("span").textContent=playing?"Pause":"Play";
+  $("playIcon").innerHTML=playing?'<path d="M3 2h3.5v12H3zM9.5 2H13v12H9.5z"/>':'<path d="M3 1.5v13L14 8z"/>';
+}
+function pressed(id){ return $(id).getAttribute("aria-pressed")==="true"; }
+
+/* ---------------- controls ---------------- */
+$("playBtn").onclick=()=>{ if(playing){ stop(); } else play(); };
+function stepBy(d){ if(playing) stop(); let k=orderPosFor(cur)+d; while(k>=0&&k<order.length&&evs[order[k]].rest) k+=d; if(k<0||k>=order.length) return; opos=k; select(order[k],true); previewNote(order[k]); }
+$("prevBtn").onclick=()=>stepBy(-1);
+$("nextBtn").onclick=()=>stepBy(1);
+["countBtn","clickBtn","loopBtn"].forEach(id=>$(id).onclick=()=>{ const b=$(id); b.setAttribute("aria-pressed",pressed(id)?"false":"true"); store.set("svt-"+id,pressed(id)); });
+["countBtn","clickBtn","loopBtn"].forEach(id=>{ const v=store.get("svt-"+id,null); if(v!==null) $(id).setAttribute("aria-pressed",v?"true":"false"); });
+$("tempo").oninput=()=>{ const v=+$("tempo").value; $("tempoOut").textContent=v+" bpm"; tempos[song.id]=v; store.set("svt-tempos",tempos); };
+$("tempo").onchange=()=>{ if(playing){ stop(); play(); } };
+document.addEventListener("keydown",e=>{
+  if(e.target.closest("input,textarea,select")) return;
+  if(e.code==="Space"){ if(e.target.closest("button,summary")) return; e.preventDefault(); $("playBtn").click(); }
+  else if(e.key==="ArrowRight"){ e.preventDefault(); stepBy(1); }
+  else if(e.key==="ArrowLeft"){ e.preventDefault(); stepBy(-1); }
+});
+let rz; addEventListener("resize",()=>{ clearTimeout(rz); rz=setTimeout(()=>{ const c=cur; renderScore(); select(c,false); },150); });
+
+/* ---------------- editor ---------------- */
+const NAMES=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"], FNAMES=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const FROW=["0","1↓","1","2↓","2↑","3","3↑","4"];
+let edLen="q", edDot=false, edBow="", caret=null;
+const ta=$("edNotes");
+function edSong(){
+  return { id: $("edTitle").dataset.editing || "draft",
+    title:$("edTitle").value.trim()||"My song", sub:"Added by you", key:$("edKey").value, time:$("edTime").value,
+    tempo:+$("edTempo").value||80, num:($("edNum").value.trim()||"★").slice(0,3), book:$("edBook").value, notes:ta.value, tip:$("edTip").value.trim(), mine:true };
+}
+function edCheck(s,quiet){
+  const {evs:ev,errs}=parseSong(s.notes,s.key); const msg=$("edmsg");
+  if(errs.length){ msg.className="err"; msg.textContent="I couldn't read: "+errs.slice(0,6).join(", ")+(errs.length>6?" …":"")+". Check the pitch, octave and length letter."; return false; }
+  if(!ev.length){ msg.className=""; msg.textContent="Pick a length, then tap a note to start."; return false; }
+  const per=BEATS[s.time]||4, bars={}; ev.forEach(e=>bars[e.bar]=(bars[e.bar]||0)+e.beats);
+  const ids=Object.keys(bars).map(Number);
+  const off=[...oddBars(ev,s.time)].map(b=>b+1);
+  const lastB=ids[ids.length-1], left=per-bars[lastB];
+  const lb=fmtBeats(+left.toFixed(3)).split(" ");
+  const now = left>1e-6 ? `Bar ${lastB+1} needs ${lb[0]} more ${lb[1]}.` : left<-1e-6 ? `Bar ${lastB+1} is too long.` : `Bar ${lastB+1} is full; add a bar line next.`;
+  msg.className = off.length?"err":"";
+  msg.textContent = `${ev.filter(e=>!e.rest).length} notes. ` + (off.length ? `Bars ${off.slice(0,6).join(", ")} don't add up to ${per} beats (shaded on the score). ` : "") + now;
+  return true;
+}
+let pvT;
+function edPreview(now){
+  clearTimeout(pvT);
+  pvT=setTimeout(()=>{ const s=edSong(); if(edCheck(s) && $("edLive").checked) loadSong(null,s,true); }, now?0:350);
+}
+ta.addEventListener("input",()=>edPreview());
+$("edKey").addEventListener("change",()=>{ buildGrid(); edPreview(true); });
+["edTime","edTitle","edNum","edTempo","edTip"].forEach(id=>$(id).addEventListener("change",()=>edPreview(true)));
+["keyup","click","select","blur"].forEach(ev=>ta.addEventListener(ev,()=>{ caret=ta.selectionStart; slurUI(); }));
+
+function insertTok(tok){
+  const v=ta.value, p=caret==null?v.length:Math.min(caret,v.length);
+  const before=v.slice(0,p).replace(/[ \t]+$/,""), after=v.slice(p).replace(/^[ \t]+/,"");
+  const sep = before && !/\n$/.test(before) ? " " : "";
+  const bars=((before+" "+tok).match(/(^|\s)(\||:\|)(?=\s|$)/g)||[]).length;
+  const tail = (tok==="|"||tok===":|") && bars%4===0 ? "\n" : " ";
+  ta.value=before+sep+tok+tail+after;
+  caret=(before+sep+tok+tail).length; ta.setSelectionRange(caret,caret);
+  slurUI(); edPreview(true);
+}
+function undoTok(){
+  const v=ta.value, p=caret==null?v.length:Math.min(caret,v.length);
+  const before=v.slice(0,p).replace(/\s+$/,""), i=before.search(/\S+$/); if(i<0) return;
+  ta.value=before.slice(0,i)+v.slice(p).replace(/^\s+/,""); caret=i; ta.setSelectionRange(i,i); slurUI(); edPreview(true);
+}
+function slurOpen(){ const b=ta.value.slice(0,caret==null?ta.value.length:caret); return (b.match(/\(/g)||[]).length>(b.match(/\)/g)||[]).length; }
+function slurUI(){ const o=slurOpen(), b=$("slurBtn"); b.textContent=o?"End slur )":"Start slur ("; b.classList.toggle("open",o); }
+
+function buildGrid(){
+  const g=$("noteGrid"); g.innerHTML=""; const key=$("edKey").value, flatKey=(KEYSIG[key]||[]).some(k=>k[1]==="b");
+  $("gridKey").textContent=`(${key} major; dimmed notes are outside the key)`;
+  g.appendChild(Object.assign(document.createElement("div"),{className:"gf",textContent:"fing."}));
+  STRINGS.forEach(st=>g.appendChild(Object.assign(document.createElement("div"),{className:"gh",textContent:st.n})));
+  FROW.forEach((lab,k)=>{
+    g.appendChild(Object.assign(document.createElement("div"),{className:"gf",textContent:lab}));
+    STRINGS.forEach(st=>{
+      const midi=st.midi+k, nm=(flatKey?FNAMES:NAMES)[midi%12], oct=Math.floor(midi/12)-1, letter=nm[0];
+      const inKey = keyAcc(key,letter)===(nm[1]==="#"?1:nm[1]==="b"?-1:0);
+      const b=document.createElement("button"); b.type="button"; b.className="nk"+(inKey?"":" out")+([2,4,5].includes(k)?" tape":"");
+      b.innerHTML=`${nm.replace("#","♯").replace("b","♭")}<small>${oct}</small>`;
+      b.title=`${nm.replace("#","♯").replace("b","♭")}${oct} on the ${st.n} string, ${FINGER[k].say.toLowerCase()}`;
+      b.onclick=()=>{
+        const auto=STRINGS.slice().reverse().find(x=>midi>=x.midi);
+        let tok=nm+oct+(edDot?"d":"")+edLen+(auto.n!==st.n?"@"+st.n:"")+(edBow?":"+edBow:"");
+        insertTok(tok); setBowPick("");
+        audio(); playTone(freq(midi),ctx.currentTime+.02,Math.min(1.2,LEN[edLen]*(edDot?1.5:1)*spb()),false);
+      };
+      g.appendChild(b);
+    });
+  });
+}
+function setBowPick(v){ edBow=v; document.querySelectorAll(".bowpick").forEach(b=>b.setAttribute("aria-pressed",b.dataset.bow===v?"true":"false")); }
+document.querySelectorAll("#lenBtns [data-len]").forEach(b=>b.onclick=()=>{ edLen=b.dataset.len;
+  document.querySelectorAll("#lenBtns [data-len]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false")); });
+$("dotBtn").onclick=()=>{ edDot=!edDot; $("dotBtn").setAttribute("aria-pressed",edDot?"true":"false"); };
+document.querySelectorAll(".bowpick").forEach(b=>b.onclick=()=>setBowPick(b.dataset.bow));
+document.querySelectorAll("[data-tok]").forEach(b=>b.onclick=()=>{
+  const t=b.dataset.tok; insertTok(t==="REST" ? "R"+(edDot?"d":"")+edLen : t); });
+$("slurBtn").onclick=()=>insertTok(slurOpen()?")":"(");
+function markPrev(mark){ // add a mark (~ . > -) to the note just before the cursor
+  const v=ta.value, p=caret==null?v.length:Math.min(caret,v.length), before=v.slice(0,p).replace(/\s+$/,""), m=before.match(/(\S+)$/);
+  if(!m || !/^[A-G]/i.test(m[1]) || m[1].includes(mark)){ $("edmsg").className="err"; $("edmsg").textContent="Put the cursor right after a note, then press the button."; return; }
+  ta.value=before+mark+" "+v.slice(p).replace(/^\s+/,""); caret=before.length+2; ta.setSelectionRange(caret,caret); edPreview(true);
+}
+$("tieBtn").onclick=()=>markPrev("~");
+document.querySelectorAll(".markBtn").forEach(b=>b.onclick=()=>markPrev(b.dataset.mark));
+$("undoBtn").onclick=undoTok;
+$("edPlay").onclick=()=>{ if(playing){ stop(); return; } select(firstNote(),false); play(); };
+let clrArmed=false;
+$("clearBtn").onclick=()=>{ if(!clrArmed){ clrArmed=true; $("clearBtn").textContent="Click again to clear"; setTimeout(()=>{clrArmed=false;$("clearBtn").textContent="Clear notes";},3000); return; }
+  clrArmed=false; $("clearBtn").textContent="Clear notes"; ta.value=""; caret=0; slurUI(); edCheck(edSong()); };
+
+$("edSave").onclick=()=>{ const s=edSong(); if(!edCheck(s)) return;
+  if(s.id==="draft") s.id="my-"+Date.now();
+  const plain={id:s.id,num:s.num,book:s.book,title:s.title,sub:s.sub,key:s.key,time:s.time,tempo:s.tempo,notes:s.notes,tip:s.tip};
+  const i=mySongs.findIndex(m=>m.id===s.id); if(i>=0) mySongs[i]=plain; else mySongs.push(plain);
+  store.set("svt-mysongs",mySongs); $("edTitle").dataset.editing=s.id; loadSong(s.id);
+  $("edmsg").className=""; $("edmsg").textContent=`Saved “${s.title}” in this browser`+(s.book==="mine"?" under My songs.":`, as number ${s.num} in Book ${s.book}.`); };
+$("edNew").onclick=()=>{ $("edTitle").value=""; $("edTitle").dataset.editing=""; $("edNum").value=""; $("edBook").value="mine"; $("edTip").value="";
+  ta.value=""; caret=0; slurUI(); $("edmsg").className=""; $("edmsg").textContent="New song. Pick a key and time, then a length, then tap notes."; ta.focus(); };
+$("edLoad").onclick=()=>{ if(!song) return; const mine=mySongs.some(m=>m.id===song.id);
+  $("edTitle").value=song.title.replace(/ \(my copy\)$/,"")+(mine?"":" (my copy)"); $("edKey").value=song.key; $("edTime").value=song.time; $("edTempo").value=song.tempo||80;
+  $("edNum").value=mine?(song.num||""):""; $("edBook").value=mine?bookOf(song):"mine"; ta.value=song.notes.replace(/\s*\|\s*/g," | "); $("edTip").value=song.tip||"";
+  $("edTitle").dataset.editing=mine?song.id:""; caret=ta.value.length; buildGrid(); slurUI();
+  $("edmsg").className=""; $("edmsg").textContent=mine?"Editing your song. Save to keep the changes.":"This is a copy. Saving adds it to your songs; the original stays as it is."; };
+let delArmed=false;
+$("edDelete").onclick=()=>{ if(!song||!mySongs.some(m=>m.id===song.id)) return;
+  if(!delArmed){ delArmed=true; $("edDelete").textContent="Click again to delete"; setTimeout(()=>{delArmed=false; $("edDelete").textContent="Delete this song";},3000); return; }
+  const t=song.title; mySongs=mySongs.filter(m=>m.id!==song.id); store.set("svt-mysongs",mySongs); delArmed=false;
+  $("edDelete").textContent="Delete this song"; $("edTitle").dataset.editing=""; loadSong("tw-t"); $("edmsg").textContent=`Deleted “${t}”.`; };
+
+/* backup */
+$("bkCopy").onclick=()=>{
+  const txt=JSON.stringify({app:"suzuki-violin-tutor",version:1,songs:mySongs}); const box=$("edBackup"); box.value=txt;
+  const done=m=>{ $("bkmsg").textContent=m; };
+  if(!mySongs.length){ done("You have no saved songs yet."); return; }
+  const sel=()=>{ box.focus(); box.select(); done("Backup text is selected; press Ctrl+C (⌘C on Mac) to copy it."); };
+  try{ navigator.clipboard.writeText(txt).then(()=>done(`Copied ${mySongs.length} song${mySongs.length>1?"s":""} to the clipboard.`),sel); }catch(e){ sel(); }
+};
+$("bkImport").onclick=()=>{
+  let data; try{ data=JSON.parse($("edBackup").value); }catch(e){ $("bkmsg").textContent="That isn't backup text. Paste the whole text you copied, including the { and }."; return; }
+  const list=Array.isArray(data)?data:Array.isArray(data.songs)?data.songs:[data];
+  let n=0; list.forEach(x=>{ if(!x||typeof x.notes!=="string") return;
+    const s={id:x.id||"my-"+Date.now()+"-"+n,num:String(x.num||"★").slice(0,3),book:["1","2"].includes(String(x.book))?String(x.book):"mine",title:String(x.title||"Imported song"),sub:x.sub||"Added by you",key:KEYSIG[x.key]?x.key:"A",time:BEATS[x.time]?x.time:"4/4",tempo:+x.tempo||80,notes:x.notes,tip:x.tip||""};
+    const i=mySongs.findIndex(m=>m.id===s.id); if(i>=0) mySongs[i]=s; else mySongs.push(s); n++; });
+  store.set("svt-mysongs",mySongs); renderSongList(); $("bkmsg").textContent = n ? `Imported ${n} song${n>1?"s":""}.` : "No songs found in that text.";
+};
+
+/* editor mode toggle: move the editor right under the score while it's open */
+const edEl=$("editor"), scorePanel=$("score").closest(".panel"), edHome=edEl.nextElementSibling;
+let edHint=null;
+function openSlot(s){
+  $("edNew").click();
+  $("edTitle").value=s.title; $("edNum").value=s.num; $("edBook").value=s.book;
+  const msg=`Adding “${s.title}” as number ${s.num} in Book ${s.book}. Set the key, time and speed from your book, then tap in the notes. When you save, it takes its place in the list.`;
+  $("edmsg").className=""; $("edmsg").textContent=msg;
+  if(!edEl.open){ edHint=msg; edEl.open=true; }
+  setTimeout(()=>edEl.scrollIntoView({behavior:"smooth",block:"start"}),60);
+}
+edEl.addEventListener("toggle",()=>{
+  document.body.classList.toggle("editing",edEl.open);
+  if(edEl.open){ scorePanel.after(edEl); buildGrid(); slurUI(); if(!ta.value.trim()) $("edmsg").textContent=edHint||"Pick a key and time, then a length, then tap notes. Or press “Edit the song on screen”."; edHint=null; }
+  else edHome.before(edEl);
+  $("editModeBtn").setAttribute("aria-pressed",edEl.open?"true":"false");
+  const c=cur; renderScore(); select(c,false);
+});
+$("editModeBtn").onclick=()=>{ edEl.open=!edEl.open; if(edEl.open) setTimeout(()=>scorePanel.scrollIntoView({behavior:"smooth",block:"start"}),50); };
+
+/* tuning notes: a steady reference tone (no vibrato, so it is easy to match) */
+let drone=null, droneTimer=null;
+function startDrone(midis,src){
+  stopDrone(); if(playing) stop(); audio();
+  const t=ctx.currentTime, g=ctx.createGain();
+  g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(.17/Math.sqrt(midis.length),t+.18); g.connect(master._in);
+  const oscs=midis.map(m=>{ const f=freq(m), o=ctx.createOscillator(), lp=ctx.createBiquadFilter();
+    o.type="sawtooth"; o.frequency.value=f; lp.type="lowpass"; lp.frequency.value=Math.min(3200,f*5); lp.Q.value=.5;
+    o.connect(lp); lp.connect(g); o.start(t); return o; });
+  drone={g,oscs,src}; src&&src.setAttribute("aria-pressed","true");
+  clearTimeout(droneTimer); droneTimer=setTimeout(stopDrone,90000);   // stops by itself after 90 seconds
+}
+function stopDrone(){
+  if(!drone) return; const t=ctx.currentTime, d=drone; drone=null;
+  d.g.gain.cancelScheduledValues(t); d.g.gain.setValueAtTime(d.g.gain.value,t); d.g.gain.linearRampToValueAtTime(0,t+.15);
+  d.oscs.forEach(o=>o.stop(t+.2)); d.src&&d.src.setAttribute("aria-pressed","false"); clearTimeout(droneTimer);
+}
+document.querySelectorAll("[data-drone]").forEach(b=>{ b.setAttribute("aria-pressed","false"); b.onclick=()=>{ const on=drone&&drone.src===b; stopDrone(); if(!on) startDrone([+b.dataset.drone],b); }; });
+document.querySelectorAll("[data-octdrone]").forEach(b=>b.onclick=()=>{ const on=drone&&drone.src===b; stopDrone(); if(!on) startDrone([+b.dataset.octdrone],b); });
+document.querySelectorAll("[data-oct]").forEach(b=>b.onclick=()=>{ // like the book: open string, octave, then both together
+  stopDrone(); if(playing) stop(); audio(); const lo=+b.dataset.oct, t=ctx.currentTime+.05;
+  playTone(freq(lo),t,.55); playTone(freq(lo+12),t+.7,.55); playTone(freq(lo),t+1.4,1.8); playTone(freq(lo+12),t+1.4,1.8);
+});
+$("tuneBtn").onclick=()=>{ const p=$("tunePanel"), open=p.hidden; p.hidden=!open; $("tuneBtn").setAttribute("aria-pressed",open?"true":"false"); if(!open) stopDrone(); };
+
+/* passage practice: loop chosen bars, optionally a little faster each time */
+const pass={on:false,from:1,to:4,round:1,startTempo:null};
+let passSaved=store.get("svt-pass",{}), passOpts=store.get("svt-passopts",{loop:true,speed:false,step:4});
+function lastBarNo(){ return Math.max(1,...barNo.filter(n=>n!=null)); }
+function inPassage(bar){ if(!pass.on) return false; const b=barNo[bar]; return (b>=pass.from && b<=pass.to) || (b===0 && pass.from<=1); }
+function passRange(){
+  if(!pass.on) return null;
+  let ks=-1;
+  for(let k=0;k<order.length;k++){ if(inPassage(evs[order[k]].bar)){ ks=k; break; } }
+  if(ks<0) return null;
+  let ke=ks;
+  for(let k=ks+1;k<order.length;k++){ if(!inPassage(evs[order[k]].bar) || order[k]<order[k-1]) break; ke=k; }
+  return [ks,ke];
+}
+function loadPassageFor(){
+  const last=lastBarNo(), sv=passSaved[song.id];
+  pass.from=sv?Math.min(sv.from,last):1; pass.to=sv?Math.min(Math.max(sv.to,pass.from),last):Math.min(4,last);
+  pass.on=!!(sv&&sv.on); pass.round=1; pass.startTempo=null;
+  $("passFrom").max=last; $("passTo").max=last;
+  $("passTarget").value=Math.max(song.tempo||80, +$("tempo").value+8);
+  passUI();
+}
+function savePass(){ passSaved[song.id]={from:pass.from,to:pass.to,on:pass.on}; store.set("svt-pass",passSaved); }
+function passUI(){
+  $("passFrom").value=pass.from; $("passTo").value=pass.to;
+  $("passBtn").setAttribute("aria-pressed",pass.on?"true":"false"); $("passBtn").textContent=pass.on?"On":"Off";
+  $("passLoop").checked=passOpts.loop; $("passSpeed").checked=passOpts.speed; $("passStep").value=passOpts.step;
+  const pill=$("passPill"); pill.hidden=!pass.on; pill.textContent=`Bars ${pass.from}–${pass.to}`;
+  const r=pass.on&&passRange();
+  $("passStatus").innerHTML = !pass.on ? "Pick the bars that need work, slow the speed down, and press Play. The passage is shaded on the music."
+    : !r ? "Those bars aren't in this piece. Check the bar numbers on the music."
+    : playing ? `Playing bars <b>${pass.from}–${pass.to}</b> · round <b>${pass.round}</b> at <b>${$("tempo").value} bpm</b>`
+    : `Bars <b>${pass.from}–${pass.to}</b> are ready. Press Play.${passOpts.speed?` Each round gets ${passOpts.step} bpm faster, up to ${$("passTarget").value} bpm.`:""}`;
+}
+function setPass(changes,rerender=true){
+  Object.assign(pass,changes);
+  const last=lastBarNo();
+  pass.from=Math.max(1,Math.min(last,Math.round(+pass.from||1))); pass.to=Math.max(pass.from,Math.min(last,Math.round(+pass.to||pass.from)));
+  pass.round=1; pass.startTempo=null;
+  if(playing) stop();
+  savePass(); passUI();
+  if(rerender){ const c=cur; renderScore(); applyShow(); select(c,false); }
+}
+$("passBtn").onclick=()=>{ const on=!pass.on; setPass({on}); if(on){ const r=passRange(); if(r){ opos=r[0]; select(order[r[0]],true); } } };
+$("passFrom").onchange=()=>setPass({from:$("passFrom").value, on:true});
+$("passTo").onchange=()=>setPass({to:$("passTo").value, on:true});
+$("passStart").onclick=()=>{ const b=barNo[evs[cur].bar]||1; setPass({from:b,to:Math.max(b,pass.to),on:true}); };
+$("passEnd").onclick=()=>{ const b=barNo[evs[cur].bar]||1; setPass({to:b,from:Math.min(b,pass.from),on:true}); };
+$("passLoop").onchange=()=>{ passOpts.loop=$("passLoop").checked; store.set("svt-passopts",passOpts); passUI(); };
+$("passSpeed").onchange=()=>{ passOpts.speed=$("passSpeed").checked; store.set("svt-passopts",passOpts); passUI(); };
+$("passStep").onchange=()=>{ passOpts.step=Math.max(1,Math.min(20,+$("passStep").value||4)); store.set("svt-passopts",passOpts); passUI(); };
+$("passTarget").onchange=()=>passUI();
+
+/* reading practice: hide finger numbers, string letters or bowings on the score */
+let showPrefs=store.get("svt-show",{f:true,s:true,b:true});
+function applyShow(){
+  const sc=$("score");
+  ["f","s","b"].forEach(k=>{ sc.classList.toggle("hide-"+k,!showPrefs[k]); document.querySelector(`.chipbtn[data-show="${k}"]`).setAttribute("aria-pressed",showPrefs[k]?"true":"false"); });
+  $("readNote").hidden = showPrefs.f && showPrefs.s && showPrefs.b;
+}
+document.querySelectorAll(".chipbtn[data-show]").forEach(b=>b.onclick=()=>{ const k=b.dataset.show; showPrefs[k]=!showPrefs[k]; store.set("svt-show",showPrefs); applyShow(); });
+applyShow();
+
+/* ---------------- start ---------------- */
+loadSong(store.get("svt-song","tw-t"));
+</script>
+</body></html>
