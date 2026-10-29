@@ -83,6 +83,7 @@ button,select,input,textarea{font:inherit;color:inherit}
 .ev.cur .fnum{fill:var(--rosin);font-weight:700}
 .fnum{font-family:var(--display);font-weight:600;font-size:14px;fill:var(--ink)}
 .slet{font-size:9.5px;fill:var(--muted);letter-spacing:.04em}
+.fnum.gfn{font-size:10.5px}
 .bd{fill:var(--down)} .bu{stroke:var(--up);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .tsig{font-family:var(--display);font-weight:800;font-size:21px;fill:var(--ink)}
 .barno{font-size:11px;font-style:italic;fill:var(--muted)}
@@ -387,6 +388,7 @@ body.editing #score{max-height:52vh;overflow-y:auto}
           <button type="button" class="btn sm" data-len="e">Eighth</button>
           <button type="button" class="btn sm" data-len="s">16th</button>
           <button type="button" class="btn sm" data-len="t" title="Triplet eighth: three in one beat">Triplet</button>
+          <button type="button" class="btn sm" data-len="g" title="Grace note: a quick small note. Tap it, then the note it leads into">Grace</button>
           <button type="button" class="btn sm toggle" id="dotBtn" aria-pressed="false" title="Dotted: half as long again">Dotted ·</button>
         </div>
         <div class="step"><span class="stepn">2</span> Tap a note <span class="muted" id="gridKey"></span></div>
@@ -459,6 +461,7 @@ body.editing #score{max-height:52vh;overflow-y:auto}
               <li>Slur notes into one bow with brackets: <code>(A4e B4e)</code>.</li>
               <li>Tie two notes of the same pitch into one long note with <code>~</code> on the first: <code>B4h~ B4q</code>.</li>
               <li>Marks go at the end of a note: <code>.</code> staccato, <code>&gt;</code> accent, <code>-</code> tenuto, <code>^</code> trill. <code>A4e.</code> <code>G4q&gt;</code> <code>D5q-.</code> <code>F#5q^</code></li>
+              <li>Grace notes: use <code>g</code> as the length. Before a note, they're played quickly on its beat: <code>B4g A4dh</code>. Inside the slur of the note before, they're played at the end of that note instead: <code>(C5q D5g C5g)</code>, or a trill ending <code>(F#5q^ E5g F#5g)</code>. They take no time in the bar.</li>
             </ul>
           </div>
         </details>
@@ -476,7 +479,7 @@ body.editing #score{max-height:52vh;overflow-y:auto}
     </div>
   </details>
 
-  <p class="foot">Notes, fingerings and bowings follow Suzuki Violin School, Volumes 1 and 2. Grace notes, trills, pizzicato and chords are left out of the playback. The pieces Dr. Suzuki composed himself are still under copyright, so they aren't included here. You can type them in from your own book in Editor mode.</p>
+  <p class="foot">Notes, fingerings and bowings follow Suzuki Violin School, Volumes 1 and 2. Pizzicato (plucked) notes are played with the bow, and chords are left out. The pieces Dr. Suzuki composed himself are still under copyright, so they aren't included here. You can type them in from your own book in Editor mode.</p>
 </div>
 
 <script>
@@ -533,14 +536,14 @@ const BUILTIN = [
     notes:"G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q E5q E5e G5e | D5q D5q D5e G5e | C5q D5e C5e B4e C5e | A4dh | G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q D5e C5e B4e A4e | D5q C5e B4e A4e G4e | (A4t B4t C5t) (D4q. F#4q.) | G4dh :| |: G4e:D A4e B4e A4e G4e F#4e | G4q (E4q. E4q.) | G5e F#5e E5e G5e F#5e E5e | F#5q (B4q. B4q.) | G5e F#5e E5e G5e F#5e E5e | F#5q (B4q. E5q.) | (F#5t G5t A5t) (B4q. D#5q.) | E5q@A D#5e E5e F#5q | G5q G5e F#5e E5e D5e | E5q E5e D5e C5e B4e | C5q C5e B4e A4e G4e | F#4q E4e F#4e D4q | (A4q:D D4q) D4q. | (B4q D4q) D4q. | C5q D5e C5e B4e C5e | A4dh | G4e:D- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | G4e- B4e- D5e- G5e- A4e- F#5e- | G5q-. (G4q. G4q.) | E5q D5e C5e B4e A4e | D5q C5e B4e A4e G4e | (A4t B4t C5t) (D4q. F#4q.) | G4dh :|",
     tip:"The first bar crosses all the way from the D string to the E string and back. Use short strokes. G on the E string is a low 2. Near the end of the second half, the E with a 4 is played with your little finger on the A string." },
   { book:1, id:"min3", num:"15", title:"Minuet 3", sub:"J. S. Bach", key:"G", time:"3/4", tempo:104,
-    notes:"D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | F#4q (G4e A4e) B4e G4e | A4dh | D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | A4q (B4e A4e) G4e F#4e | G4dh :| |: B5q:D (G5e A5e) B5e G5e | A5q (D5e E5e) F#5e D5e | G5q (E5e F#5e) G5e D5e | C#5q B4e C#5e A4q | (A4e B4e) C#5e D5e E5e F#5e | G5q F#5q E5q | F#5q (A4q. C#5q.) | D5dh | D5q:D G4e F#4e G4q | E5q G4e F#4e G4q | D5q (C5q. B4q.) | (A4e G4e) F#4e G4e A4q | (D4e E4e) F#4e G4e A4e B4e | C5q B4q A4q | (B4e D5e) (G4q. F#4q.) | G4dh :|",
-    tip:"Slurs: two eighth notes in one bow after most of the quarter notes. The second half opens with B on the E string played with the 4th finger; place it carefully, and let the 2nd finger touch the 1st for G. (The book also has a short grace note before the A in bar 8, which isn't played here.)" },
+    notes:"D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | F#4q (G4e A4e) B4e G4e | B4g A4dh | D5q:D- (G4e A4e) B4e C5e | D5q (G4q. G4q.) | E5q (C5e D5e) E5e F#5e | G5q (G4q. G4q.) | C5q (D5e C5e) B4e A4e | B4q (C5e B4e) A4e G4e | A4q (B4e A4e) G4e F#4e | G4dh :| |: B5q:D (G5e A5e) B5e G5e | A5q (D5e E5e) F#5e D5e | G5q (E5e F#5e) G5e D5e | C#5q B4e C#5e A4q | (A4e B4e) C#5e D5e E5e F#5e | G5q F#5q E5q | F#5q (A4q. C#5q.) | D5dh | D5q:D G4e F#4e G4q | E5q G4e F#4e G4q | D5q (C5q. B4q.) | (A4e G4e) F#4e G4e A4q | (D4e E4e) F#4e G4e A4e B4e | C5q B4q A4q | (B4e D5e) (G4q. F#4q.) | G4dh :|",
+    tip:"Slurs: two eighth notes in one bow after most of the quarter notes. The second half opens with B on the E string played with the 4th finger; place it carefully, and let the 2nd finger touch the 1st for G. In bar 8, the small grace note is a quick flick of the 1st finger (B) just before the open A, in the same bow." },
   { book:1, id:"farmer", num:"16", title:"The Happy Farmer", sub:"R. Schumann", key:"G", time:"4/4", tempo:96,
     notes:"D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | F#4q E4q D4q Re D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | F#4q E4q D4q Re D4e:U | (C5dq:D> B4e.) (A4dq D4e.) | C5e> B4e A4e G4e A4dq D4e | (G4dq B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | A4q F#4q G4q Re D4e:U | (C5dq:D> B4e.) (A4dq D4e.) | C5e B4e A4e G4e A4dq D4e:U | (G4dq:D B4e.) (D5dq G4e.) | C5e E5e G5e E5e D5dq B4e:U | C5e A4e D4e C5e B4e G4e D4e B4e | A4q F#4q G4q Re",
     tip:"Start on an up bow before the first bar. The dotted quarter and eighth are hooked: one bow, with a small stop before the eighth. In the bars of eighth notes, the bow crosses back to open D every few notes, so keep the crossings small." },
   { book:1, id:"gavotte", num:"17", title:"Gavotte", sub:"F. J. Gossec", key:"G", time:"2/2", tempo:112,
-    notes:"D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- G5q-. G4q- Rq | C5e:D. D5e. C5e. A4e. B4e. C5e. B4e. G4e. | A4q- D5q-. D4q- Rq | D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- G5q-. G4q- Rq | B4q:D G4e E4e G4q E4e C#4e | D4q- D5q-. D4q- Rq :| A4e:D. C5e. B4e. D5e. C5e. B4e. A4e. G4e. | F#4q A4q C5q Rq | B4e:D. D5e. C5e. E5e. D5e. C5e. B4e. A4e. | G4q B4q D5q Rq | E5e@A:D. D5e. D5e. C5e. C5e. B4e. B4e. A4e. | A4q C5q E5q Rq | D5e:D. B4e. F#4e. G4e. C5e. A4e. E4e. F#4e. | G4q G5q G4q Rq FINE |: B4q:D- B4q- C5q- C5q- | (D5e G5e) F#5e G5e D5q Rq | G4q- G4q- A4q- A4q- | (B4s D5s C#5s D5s) (E5s@A D5s C5s B4s) A4e. D4e. F#4e. D4e. | E4q (G4e. E4e.) E5q E4q | D4q (G4e. D4e.) D5q D4q | C5q D4q B4q D4q | A4q (A4s B4s C5s B4s) A4q Rq :| |: C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. D4q. G4q. Rq | C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. G4q. B4q. Rq | E4q:D- (G4s F#4s E4s D4s) C4q E5q. | D4q- (D4s E4s D4s C4s) B3q D5q. | C5q (E5s@A D5s C5s B4s) A4q F#5q:U. | G5q:U. G4q. G3q. Rq :| DC",
-    tip:"Use short strokes and stop the bow on the string during each rest. E with a 4 is played with the little finger on the A string. After the last section, go back to the beginning (D.C.) and stop at Fine. The book adds grace notes and pizzicato in places; those aren't played here." },
+    notes:"D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- F#5g G5q-. G4q- Rq | C5e:D. D5e. C5e. A4e. B4e. C5e. B4e. G4e. | A4q- C#5g D5q-. D4q- Rq | D5e:D. E5e@A. D5e. B4e. C5e. D5e. C5e. A4e. | G4q- F#5g G5q-. G4q- Rq | B4q:D G4e E4e G4q E4e C#4e | D4q- C#5g D5q-. D4q- Rq :| A4e:D. C5e. B4e. D5e. C5e. B4e. A4e. G4e. | F#4q A4q C5q Rq | B4e:D. D5e. C5e. E5e. D5e. C5e. B4e. A4e. | G4q B4q D5q Rq | E5e@A:D. D5e. D5e. C5e. C5e. B4e. B4e. A4e. | A4q C5q E5q Rq | D5e:D. B4e. F#4e. G4e. C5e. A4e. E4e. F#4e. | G4q F#5g G5q G4q Rq FINE |: B4q:D- B4q- C5q- C5q- | (D5e G5e) F#5e G5e D5q Rq | G4q- G4q- A4q- A4q- | (B4s D5s C#5s D5s) (E5s@A D5s C5s B4s) A4e. D4e. F#4e. D4e. | E4q (G4e. E4e.) E5q E4q | D4q (G4e. D4e.) D5q D4q | C5q D4q B4q D4q | A4q (A4s B4s C5s B4s) A4q Rq :| |: C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. D4q. G4q. Rq | C5q:D- (C5s B4s A4s G4s) F#4q F#5q. | G5q. G4q. B4q. Rq | E4q:D- (G4s F#4s E4s D4s) C4q E5q. | D4q- (D4s E4s D4s C4s) B3q D5q. | C5q (E5s@A D5s C5s B4s) A4q F#5q:U. | G5q:U. G4q. G3q. Rq :| DC",
+    tip:"Use short strokes and stop the bow on the string during each rest. E with a 4 is played with the little finger on the A string. After the last section, go back to the beginning (D.C.) and stop at Fine. The small grace notes (bars 2, 4, 6, 8 and 16) are quick flicks into the main note, in the same bow. The two pizzicato (plucked) notes in the last bar are bowed here." },
   { id:"b2-chorus", book:2, num:"1", title:"Chorus from “Judas Maccabaeus”", sub:"G. F. Handel", key:"G", time:"4/4", tempo:80,
     notes:"D5h:D (B4dq C5e) | D5h G4h | (A4e B4e C5e D5e) (C5q B4q) | A4dh Rq , | (B4e:D C5e D5e E5e@A) (D5q- D5q-) | G5h D5h | C5q B4q (A4dq G4e) | G4dh Rq , | (B4e:D A4e B4e C5e) (B4q- B4q-) | A4h G4h | C5q B4q A4q G4q | F#4dh Rq , | (E5e@A:D D#5e E5e F#5e) (E5q- F#5q-) | G5h E5h | F#5q E5e D5e (C#5dq D5e) | D5dh Rq , | D5h:D (B4dq C5e) | D5h G4h | (A4e B4e C5e D5e) (C5q B4q) | A4dh Rq , | (B4e:D C5e D5e E5e@A) (D5q- D5q-) | G5h D5h | C5q B4q (A4dq G4e-) | G4dh Rq",
     tip:"Broad, full bows on the half notes. When four eighth notes are slurred, divide the bow into four equal parts. E with a 4 is the little finger on the A string; D♯ in bar 13 is a high 3, right next to it." },
@@ -554,8 +557,8 @@ const BUILTIN = [
     notes:"G4q:D G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4h | C5q B4e A4e G4h | G4q G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4q B4e A4e | G4h Rh , | D5q:D C5e B4e A4q D4e D4e | C5q B4e A4e G4h | D5q C5e B4e A4q D4e D4e | C5q B4e A4e G4h | G4q G4e A4e B4q B4e C5e | D5q E5e@A D5e B4h | D5q C5e B4e A4q B4e A4e | G4h Rh , | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (B4e. A4e.) | (G4e D4e) (B3e. D4e.) G3q. Rq , | (D5e:D D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (D4e. D4e.) | (C5e D4e) (B4e. A4e.) (G4e D4e) (D4e. D4e.) | (G4e:D D4e) (G4e. A4e.) (B4e D4e) (B4e. C5e.) | (D5e D4e) (E5e@A. D5e.) (B4e D4e) (D4e. D4e.) | (D5e D4e) (C5e. B4e.) (A4e D4e) (B4e. A4e.) | (G4e D4e) (B3e. D4e.) G3q. Rq",
     tip:"In the theme, E with a 4 is played with the little finger on the A string. In the variation, every pair of notes is slurred and the second note of each pair is often open D: keep the bow close to the D string so the crossings are small, and play the dotted pairs lightly." },
   { id:"b2-waltz", book:2, num:"5", title:"Waltz", sub:"J. Brahms", key:"G", time:"3/4", tempo:96,
-    notes:"(B4dq:D G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq F#4e) (F#4e B4e) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | (G4dq:D B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | C5q (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | G4h Rq",
-    tip:"Gentle and singing. Each bar has a long slurred note followed by a slurred pair, so the bow goes down-up in every bar. Keep the 1st finger down on B for the whole opening. E with a 4 is the little finger on the A string. The book adds a small grace note in some bars; it isn't played here." },
+    notes:"(B4dq:D G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | (C5q D5g C5g) (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq F#4e) (F#4e B4e) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | (C5q D5g C5g) (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (F#5e E5e) (D5q-. C#5q-) | (D5dq B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | (C5q D5g C5g) (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | (G4dq:D B4e) (B4e D5e) | (D5dq A4e) (A4e D5e) | (D5dq B4e) (B4e D5e) | (G5dq D5e) (D5e G5e) | (G5dq E5e) (E5e G5e) | (A5dq E5e) (E5e G5e) | (G5e F#5e) (E5q-. D5q-) | (B4dq G4e) (G4e B4e) | (B4dq G4e) (G4e B4e) | (C5q D5g C5g) (B4q-. A4q-) | (B4dq G4e) (G4e D5e) | (E5dq@A B4e) (B4e D5e) | (E5dq@A B4e) (B4e D5e) | (G5e D5e) (C5q- A4q-) | G4h Rq",
+    tip:"Gentle and singing. Each bar has a long slurred note followed by a slurred pair, so the bow goes down-up in every bar. Keep the 1st finger down on B for the whole opening. E with a 4 is the little finger on the A string. In bars 3, 11, 25 and 39, the two small grace notes (D and C) are played quickly at the end of the C, in the same bow, before the B." },
   { id:"b2-bourree", book:2, num:"6", title:"Bourrée", sub:"G. F. Handel", key:"G", time:"4/4", tempo:96,
     notes:"D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) A4q:U | B4e:D C#5e D5e B4e C#5e D5e E5e C#5e | D5e E5e F#5e D5e E5e F#5e G5e E5e | F#5e G5e A5q (A4q- C#5q-) | D5dh D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) A4q:U | B4e:D C#5e D5e B4e C#5e D5e E5e C#5e | D5e E5e F#5e D5e E5e F#5e G5e E5e | F#5e G5e A5q (A4q- C#5q-) | D5dh , A5q:U | (A5q:D F#5q) (G5e F#5e) E5e D5e | G5q (B5h E5q) | (D#5q E5q) (F#5q G5e A5e) | (G5q E5h) D5q:U | D5q:D (C5e B4e) (C5q C5q) | C5q (B4e A4e) (B4q D5q) | (E5e F#5e) G5e D5e (C5e B4e) A4e G4e | (F#4e G4e) A4e F#4e D4q:U D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) F#4q:U | (G4e:D A4e) B4e G4e A4e B4e C5e A4e | B4e C5e D5e B4e C5e D5e E5e C5e | D5q G5q B4q (A4e G4e) | G4dh , A5q:U | (A5q:D F#5q) (G5e F#5e) E5e D5e | G5q (B5h E5q) | (D#5q E5q) (F#5q G5e A5e) | (G5q E5h) D5q:U | D5q:D (C5e B4e) (C5q C5q) | C5q (B4e A4e) (B4q D5q) | (E5e F#5e) G5e D5e (C5e B4e) A4e G4e | (F#4e G4e) A4e F#4e D4q:U D5q:U | (D5q:D B4q) (C5e B4e) A4e G4e | E5q:D G5h:U F#5e:D E5e:U | D5q:D (C5e B4e) A4e B4e C5e A4e | (B4q:D G4h) F#4q:U | G4e:D A4e B4e G4e A4e B4e C5e A4e | B4e C5e D5e B4e C5e D5e E5e C5e | D5q G5q B4q (A4e G4e) | G4dh",
     tip:"Starts on an up bow. The half note after a quarter (E, then G) is an up bow, so use a fast down bow on the quarter and save bow for the long note. B on the E string is the 4th finger. D♯ in the second half is a high 3 on the A string, right next to open E." },
@@ -575,8 +578,8 @@ const BUILTIN = [
     notes:"(B4de:U C5s) |: (D5de:D> C#5s D5de> C#5s D5de> C#5s) | D5h:U (E5de@A:U B4s) | C5h (D5de A4s) | B4q Rq (G4de:U A4s) | (B4de:D> A#4s B4de> A#4s B4de> A#4s) | B4h A4e:D G4e:U | (G4e F#4e) (F#4e A4e G4e E4e) | [1 D4q Rq (B4de:U C5s) :| N:8 [2 D4q Rq (D5e:U G5e) ] |: (G5q F#5q) G5q | A5h (G5s F#5s E5s D5s) | (C5q B4q) (E5de C5s) | (B4q A4e) Re (G4de:U A4s) | (B4de:D> A#4s B4de> A#4s B4de> A#4s) | B4h (C5de:U G#4s) | A4h (B4de F#4s) | [1 G4q Rq (D5e:U G5e) :| [2 G4q Re FINE (D5e:U C#5e D5e) ] |: N:19 (B4e:D D5e) (G4e. B4e. D4e. B4e.) | (A4e C5e) (F#4e. A4e. D4e. F#4e.) | (G4e F#4e) (G4e. A4e. B4e. C5e.) | (D5e C#5e) (D5e. E5e@A. D5e.) C5e. | (B4e A#4e) (B4e. C5e. B4e.) A4e. | (G4e B4e) (A4e. G4e. F#4e. A4e@D.) | (E4e F#4e) (G4e. E4e. C#4e/4. A3e.) | D4q Re (D5e:U C#5e D5e) :| |: (E5e@A:D C5e A4e) (B4e. A4e. B4e.) | (C5e A4e F#4e) (D5e. C#5e. D5e.) | (E5e@A C5e A4e) (B4e. A4e. B4e.) | (C5e A4e F#4e) (D5e. C#5e. D5e.) | (B4e D5e) (G4e B4e. D4e. G5e.) | (E5e G5e) (C5e. E5e. A4e. C5e.) | (F#4e A4e) (D4e. E4e. F4e. F#4e.) | [1 (A4q@D G4e) (D5e:U C#5e D5e) :| [2 (A4q@D:D G4e) Re DC ]",
     tip:"Graceful, not heavy. The dotted pairs in bars 1 and 5 are all in one slur: stop the bow slightly on each dotted note. The Trio is faster and uses slurred string crossings down to open D. After the Trio, go back to the beginning (D.C.) and stop at Fine." },
   { id:"b2-boccherini", book:2, num:"12", title:"Minuet", sub:"L. Boccherini", key:"A", time:"3/4", tempo:96,
-    notes:"|: (A5s:U G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (G#5e E5e) C#5e. A5e. F#5q^ | [1 (E5q:D E4e) Re :| N:8 [2 (E5q:D E4e) Re (C5de:U E4s) ] |: (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (C5de:U E4s) | (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (A5s:D G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (C#5e A4e) F#4e. D5e. B4q^ | [1 (A4q:D A3e) Re (C5de:U E4s) :| N:20 [2 A4q:D A3e:U Re FINE ] |: N:21 K:D D4e:D. E4e. | F#4e. G4e. A4e. B4e. C#5e. D5e. | E5e. (G5s F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e (B4s C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e. (A4s G4s) F#4e (F#4s E4s) D4e Re | F#5e:D. E5e. D5e. C#5e. B4e. A4e. | B4e. B4q> B4q> B4e. | C#5e. E5e@A. (E5e@A D5e) C#5e. B4e. | A4e E4e A3e Re :| |: Rq | N:29 Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. A4q> A4e. A4e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. Re Rq (F#4e:D. G4e.) | A4e. B4e. C#5e. D5e. E5e. F#5e. | G5e:D. (G5s:U F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e:D (B4s:U C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e:D. (F#5s:U G5s) A5e. G5e. F#5e. E5e. | D5e. C#5e. B4e. A4e. G4e. F#4e. | E4e. E4q> E4q> E4e. | F#4e. A4e@D. (A4e@D G4e) F#4e. E4e. | D4e. A3e. D4e. Re DC :|",
-    tip:"Light and elegant; play near the middle of the bow and keep the staccato notes short. D♯ and G♯ marked with 4 use a low little finger. The Trio is in D major (C becomes C♯ and G is natural). After the Trio, go back to the beginning (D.C.) and stop at Fine. The trills in bars 7 and 19 are played; grace notes aren't." },
+    notes:"|: (A5s:U G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (E5e:D D#5e/4) D#5e/4. D#5e/4. (A5de:U F#5s) | (G#5e E5e) C#5e. A5e. (F#5q^ E5g F#5g) | [1 (E5q:D E4e) Re :| N:8 [2 (E5q:D E4e) Re (C5de:U E4s) ] |: (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (C5de:U E4s) | (B4e:D E4e) E4e. E4e. (A4de E4s) | (G#4e/4 E4e) E4e. E4e. (A5s:D G#5s A5s B5s) | A5e:D. A4q> (C#5q> E5e@A) | (E5e@A D5e) D5q (D5s:U C#5s D5s E5s@A) | D5e:D E4q> (B4q> D5e) | (D5e C#5e) C#5q (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (A4e:D G#4e/4) G#4e/4. G#4e/4. (D5de:U B4s) | (C#5e A4e) F#4e. D5e. (B4q^ A4g B4g) | [1 (A4q:D A3e) Re (C5de:U E4s) :| N:20 [2 A4q:D A3e:U Re FINE ] |: N:21 K:D D4e:D. E4e. | F#4e. G4e. A4e. B4e. C#5e. D5e. | E5e. (G5s F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e (B4s C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e. (A4s G4s) F#4e (F#4s E4s) D4e Re | F#5e:D. E5e. D5e. C#5e. B4e. A4e. | B4e. B4q> B4q> B4e. | C#5e. E5e@A. (E5e@A D5e) C#5e. B4e. | A4e E4e A3e Re :| |: Rq | N:29 Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. A4q> A4e. A4e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. Re | Re (A4e:D A5e.) A5e. A5e. A5e. | A5e. Re Rq (F#4e:D. G4e.) | A4e. B4e. C#5e. D5e. E5e. F#5e. | G5e:D. (G5s:U F#5s) E5e. (E5s@A D5s) C#5e. (C#5s B4s) | A4e:D (B4s:U C#5s) D5s E5s F#5s G5s A5e. A4e. | F#5e:D. (F#5s:U G5s) A5e. G5e. F#5e. E5e. | D5e. C#5e. B4e. A4e. G4e. F#4e. | E4e. E4q> E4q> E4e. | F#4e. A4e@D. (A4e@D G4e) F#4e. E4e. | D4e. A3e. D4e. Re DC :|",
+    tip:"Light and elegant; play near the middle of the bow and keep the staccato notes short. D♯ and G♯ marked with 4 use a low little finger. The Trio is in D major (C becomes C♯ and G is natural). After the Trio, go back to the beginning (D.C.) and stop at Fine. The trills in bars 7 and 19 end with the two small grace notes, in the same bow." },
 ];
 
 /* ---------------- music helpers ---------------- */
@@ -606,6 +609,7 @@ function parseSong(text,key0){
   const evs=[]; let bar=0, inSlur=false, slurStart=false, retake=true, prevBow="U", errs=[], pendStart=false, trip=0;
   let key=key0||"A", keyChange=false, vol=0, volStart=false, tiePend=false, barSet=null;
   const re=/^([A-G])(#|b|n)?(\d)(d?)([whqestxy])(@[GDAE])?(?::([DU]))?(?:\/([0-4]))?(?::([DU]))?$/i, rr=/^R(d?)([whqestxy])$/i;
+  const gre=/^([A-G])(#|b|n)?(\d)g(@[GDAE])?(?:\/([0-4]))?$/i; let graceP=[];
   const newBar=()=>{ if(evs.length&&evs[evs.length-1].bar===bar) bar++; };
   const last=()=>evs[evs.length-1];
   for(const t of toks){
@@ -621,9 +625,15 @@ function parseSong(text,key0){
     if(t==="]"){ vol=0; continue; }
     if(t===","||t==="'"){ retake=true; if(evs.length) last().lift=true; continue; }
     if(t==="("){ inSlur=true; slurStart=true; continue; }
-    if(t===")"){ inSlur=false; if(evs.length) last().slurEnd=true; continue; }
+    if(t===")"){ inSlur=false; if(evs.length){ if(last().after) last().slurToAfter=true; else last().slurEnd=true; } continue; }
+    const gm=t.match(gre);
+    if(gm){ const gp=pitchOf(gm[1],gm[2],gm[3],gm[4],gm[5]); if(!gp){ errs.push(t+" (not playable there in first position)"); continue; }
+      const lv=evs[evs.length-1];
+      if(inSlur && !slurStart && lv && !lv.rest && !graceP.length) (lv.after=lv.after||[]).push(gp); // slurred on from the note before: played at its end
+      else graceP.push(gp);                                                                          // otherwise: quick, on the beat of the next note
+      continue; }
     let m=t.match(rr), ev;
-    if(m){ const l=m[2].toLowerCase(); ev={rest:true,beats:LEN[l]*(m[1]?1.5:1),len:l,dot:!!m[1],bar}; tiePend=false; }
+    if(m){ if(graceP.length){ errs.push("grace note before a rest"); graceP=[]; } const l=m[2].toLowerCase(); ev={rest:true,beats:LEN[l]*(m[1]?1.5:1),len:l,dot:!!m[1],bar}; tiePend=false; }
     else {
       let core=t, art="", tieMark=false;
       while(/[.>\-~^]$/.test(core)){ const c=core.slice(-1); if(c==="~") tieMark=true; else art+=c; core=core.slice(0,-1); }
@@ -647,6 +657,7 @@ function parseSong(text,key0){
         slurStart, inSlur, step:oct*7+LETTERS.indexOf(letter)};
       if(tiePend){ ev.tied=true; if(evs.length) last().tieTo=true; }
       if(m[10]) ev.tie=true;
+      if(graceP.length){ ev.grace=graceP; graceP=[]; }
       if(art.includes(".")) ev.stacc=true;
       if(art.includes(">")) ev.accent=true;
       if(art.includes("^")) ev.trill=true;
@@ -661,7 +672,18 @@ function parseSong(text,key0){
     if(vol){ ev.volta=vol; if(volStart){ ev.voltaStart=true; volStart=false; } }
     evs.push(ev);
   }
+  if(graceP.length) errs.push("grace note with no note after it");
   return {evs,errs};
+}
+/* pitch, string and finger for a grace note (same rules as a normal note) */
+function pitchOf(L,A,O,S,F){
+  const letter=L.toUpperCase(), acc=A==="#"?1:A==="b"?-1:0, oct=+O, midi=12*(oct+1)+BASE[letter]+acc;
+  let s = S ? STRINGS.find(x=>x.n===S[1].toUpperCase()) : STRINGS.slice().reverse().find(x=>midi>=x.midi);
+  if(!S && s && s.n!=="E" && midi-s.midi>7) s=STRINGS[STRINGS.indexOf(s)+1];
+  if(!s||midi<s.midi||midi-s.midi>8) return null;
+  const semis=midi-s.midi; let fing=FINGER[semis];
+  if(F!=null && +F!==fing.f){ const o=+F; fing={f:o,kind:"",say:o?ORD[o]+" finger":"Open string",how:""}; }
+  return {letter,acc,oct,midi,str:s.n,semis,fing,step:oct*7+LETTERS.indexOf(letter)};
 }
 /* play order with repeats and D.C. al Fine */
 function buildOrder(evs){
@@ -834,17 +856,24 @@ function drawFlat(g,x,y){
   el("path",{d:`M${x-3},${y-11}V${y+4}C${x+6},${y-1} ${x+4},${y-7} ${x-3},${y-2}`,stroke:"currentColor","stroke-width":1.4,fill:"none"},g);
 }
 let noteScale=1;
-function noteW(ev){ return noteScale*(20+24*Math.sqrt(ev.beats))*(ev.showAcc?1.12:1)+(ev.showAcc?8:0); }
+const GSP=14; // spacing of small grace notes
+function graceRun(list){ return list ? 9+list.reduce((a,g)=>a+GSP+(g.showAcc?9:0),0) : 0; }
+function graceOff(ev){ return graceRun(ev.grace); }
+function noteW(ev){ return noteScale*(20+24*Math.sqrt(ev.beats))*(ev.showAcc?1.12:1)+(ev.showAcc?8:0)+graceOff(ev)+graceRun(ev.after); }
 
 function computeAccidentals(){
   let lastBar=-1, mem={};
   evs.forEach(ev=>{
     if(ev.bar!==lastBar){ mem={}; lastBar=ev.bar; }
     if(ev.rest) return;
+    const gAcc=gr=>{ const gk=gr.letter+gr.oct, gp=gk in mem?mem[gk]:keyAcc(ev.key,gr.letter);
+      gr.showAcc = gr.acc!==gp ? (gr.acc===1?"#":gr.acc===-1?"b":"n") : null; mem[gk]=gr.acc; };
+    (ev.grace||[]).forEach(gAcc);
     const k=ev.letter+ev.oct, ka=keyAcc(ev.key,ev.letter);
     const prev = k in mem ? mem[k] : ka;
     ev.showAcc = ev.acc!==prev ? (ev.acc===1?"#":ev.acc===-1?"b":"n") : null;
     mem[k]=ev.acc;
+    (ev.after||[]).forEach(gAcc);
   });
 }
 
@@ -900,7 +929,7 @@ function renderScore(){
       } else if(e0.volta) el("path",{d:`M${x},${TOP-40} H${x+m.w*stretch-6}`,fill:"none",stroke:"currentColor","stroke-width":1.2},svg);
       if(e0.repStart) drawRepeat(svg,x+kx+(mi===0&&x<=headW+timeW?0:2),"start");
       let nx=x+kx+(10+(e0.repStart?14:0))*stretch;
-      m.ix.forEach(i=>{ const ev=evs[i], w=noteW(ev)*stretch; drawEvent(svg,ev,i,nx+(ev.showAcc?12:8),w,slurs,li); nx+=w; });
+      m.ix.forEach(i=>{ const ev=evs[i], w=noteW(ev)*stretch; drawEvent(svg,ev,i,nx+(ev.showAcc?12:8)+graceOff(ev),w,slurs,li); nx+=w; });
       x+=m.w*stretch;
       const last=(li===lines.length-1&&mi===ln.length-1);
       if(e1.fine) el("text",{x:x-2,y:TOP-26,"text-anchor":"end","font-style":"italic","font-weight":700,"font-size":13},svg).textContent="Fine";
@@ -945,7 +974,7 @@ function drawBeams(g,bg){
 }
 function drawEvent(svg,ev,i,x,w,slurs,li){
   const g=el("g",{class:"ev","data-i":i,tabindex:-1},svg);
-  el("rect",{class:"hl",x:x-w/2+2,y:8,width:Math.max(18,w-4),height:LINE_H-14,rx:8},g);
+  el("rect",{class:"hl",x:x-w/2+2-graceOff(ev)/2,y:8,width:Math.max(18,w-4),height:LINE_H-14,rx:8},g);
   g.addEventListener("click",()=>{ if(playing) stop(); const k=order.indexOf(i); if(k>=0) opos=k; select(i,true); previewNote(i); });
   evEls[i]=g;
   if(ev.rest){ drawRest(g,x,ev); return; }
@@ -954,6 +983,7 @@ function drawEvent(svg,ev,i,x,w,slurs,li){
   for(let st=28; st>=ev.step; st-=2) el("line",{x1:x-10,x2:x+10,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1.2},g);
   for(let st=40; st<=ev.step; st+=2) el("line",{x1:x-10,x2:x+10,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1.2},g);
   if(ev.showAcc){ const ax=x-15; ev.showAcc==="#"?drawSharp(g,ax,y):ev.showAcc==="n"?drawNatural(g,ax,y):drawFlat(g,ax,y); }
+  const gxs = ev.grace ? drawGraces(g,ev,x,y,false) : null, axs = ev.after ? drawGraces(g,ev,x,y,true) : null;
   const hollow=ev.len==="h"||ev.len==="w";
   if(hollow){
     el("ellipse",{class:"hollow",cx:x,cy:y,rx:6.2,ry:4.3,transform:`rotate(-20 ${x} ${y})`,fill:"none",stroke:"currentColor","stroke-width":2.2},g);
@@ -991,6 +1021,10 @@ function drawEvent(svg,ev,i,x,w,slurs,li){
   if(ev.trill) el("text",{x,y:by-15,"text-anchor":"middle","font-size":14,"font-style":"italic","font-weight":700,"font-family":"Georgia,serif"},g).textContent="tr";
   // finger + string below
   const ny = Math.max(artLow+12, bg && !bg.up ? Math.max(BOT+30, bg.bottom+16+(bg.trip?12:0)) : Math.max(BOT+30, y+(ev.step<34?24:44)));
+  [[ev.grace,gxs],[ev.after,axs]].forEach(([list,xs])=>{ if(!list) return;
+    list.forEach((gr,k)=>{ const gf=gr.fing;
+      el("text",{class:"fnum gfn",x:xs[k]+2,y:xs.top-4,"text-anchor":"middle"},g).textContent=gf.f+(gf.kind==="low"?"↓":gf.kind==="high"?"↑":"");
+      if(gr.str!==ev.str) el("text",{class:"slet",x:xs[k],y:ny+12,"text-anchor":"middle"},g).textContent=gr.str; }); });
   if(!ev.tied){
     el("text",{class:"fnum",x,y:ny,"text-anchor":"middle"},g).textContent=ev.fing.f+(ev.fing.kind==="low"?"↓":ev.fing.kind==="high"?"↑":"");
     el("text",{class:"slet",x,y:ny+12,"text-anchor":"middle"},g).textContent=ev.str;
@@ -1003,6 +1037,32 @@ function drawEvent(svg,ev,i,x,w,slurs,li){
   const pt={x,y,down:ev.step>=34,svg,li};
   if(ev.slurStart) openSlur=pt;
   if(ev.slurEnd && openSlur){ slurs.push({a:openSlur,b:pt}); openSlur=null; }
+  if(ev.slurToAfter && openSlur && axs){ const L=ev.after.length-1; slurs.push({a:{...openSlur,down:false},b:{x:axs[L]+2,y:yOf(ev.after[L].step),down:false,svg,li}}); openSlur=null; }
+}
+/* grace notes: small notes before the main note (slurred into it) or after it (at the end of its bow).
+   One grace note gets a flag (with a slash when it comes first); two or more are beamed like sixteenths. Returns their x positions. */
+function drawGraces(g,ev,x,y,after){
+  const list=after?ev.after:ev.grace, n=list.length, xs=[], gg=el("g",{class:"grace"},g);
+  if(after){ let c=x+(ev.dot?21:15); list.forEach(gr=>{ if(gr.showAcc) c+=9; xs.push(c); c+=GSP; }); }
+  else { let c=x-(ev.showAcc?28:20); for(let k=n-1;k>=0;k--){ xs[k]=c; c-=GSP+(list[k].showAcc?9:0); } }
+  const ys=list.map(gr=>yOf(gr.step)), top=Math.min(...ys)-(n>1?20:22);
+  list.forEach((gr,k)=>{ const gx=xs[k], gy=ys[k];
+    for(let st=28; st>=gr.step; st-=2) el("line",{x1:gx-6,x2:gx+6,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1},gg);
+    for(let st=40; st<=gr.step; st+=2) el("line",{x1:gx-6,x2:gx+6,y1:yOf(st),y2:yOf(st),stroke:"currentColor","stroke-width":1},gg);
+    if(gr.showAcc){ const ax=gx-9, ag=el("g",{transform:`translate(${ax},${gy}) scale(.68) translate(${-ax},${-gy})`},gg);
+      gr.showAcc==="#"?drawSharp(ag,ax,gy):gr.showAcc==="n"?drawNatural(ag,ax,gy):drawFlat(ag,ax,gy); }
+    el("ellipse",{class:"head",cx:gx,cy:gy,rx:4.3,ry:3.1,transform:`rotate(-20 ${gx} ${gy})`},gg);
+    el("line",{x1:gx+3.8,x2:gx+3.8,y1:gy,y2:n>1?top:gy-22,stroke:"currentColor","stroke-width":1.1},gg);
+  });
+  if(n===1){ const sx=xs[0]+3.8, t=ys[0]-22;
+    el("path",{d:`M${sx},${t} c.65,5.2 6.5,5.85 4.55,13 c0,-5.2 -2.6,-7.15 -4.55,-7.8z`,stroke:"currentColor","stroke-width":.6},gg);
+    if(!after) el("line",{x1:sx-4.5,x2:sx+5.5,y1:t+13,y2:t+5,stroke:"currentColor","stroke-width":1.1},gg); }
+  else { const xa=xs[0]+3.3, xb=xs[n-1]+4.3;
+    [0,4.6].forEach(o=>el("rect",{x:xa,y:top+o,width:xb-xa,height:2.6},gg)); }
+  xs.top = n>1 ? top : ys[0]-22;
+  if(!after){ const ly=Math.max(ys[0],y)+9;
+    el("path",{d:`M${xs[0]},${ys[0]+5} Q${(xs[0]+x)/2},${ly+3} ${x-3},${y+6}`,fill:"none",stroke:"currentColor","stroke-width":1.1},gg); }
+  return xs;
 }
 function drawRest(g,x,ev){
   const m=TOP+2*SP;
@@ -1048,6 +1108,7 @@ function drawBoard(i){
   const ev=evs[i]; if(!ev||ev.rest) return;
   const nj=nextInOrder(i), nx=nj<0?null:evs[nj];
   if(nx && !(nx.str===ev.str&&nx.semis===ev.semis)) ghost(nx);
+  [...(ev.grace||[]),...(ev.after||[])].forEach(graceMark);
   const si=STRINGS.findIndex(s=>s.n===ev.str);
   const line=$("str"+si); line.style.stroke="var(--rosin)";
   if(ev.semis===0){
@@ -1059,6 +1120,12 @@ function drawBoard(i){
     el("text",{x,y:y+5,"text-anchor":"middle","font-size":15,"font-weight":800,fill:"#1b1205"},fbDyn).textContent=ev.fing.f;
     el("text",{x:x+(si<2?-24:24),y:y+4,"text-anchor":"middle","font-size":12,"font-weight":700,fill:"var(--rosin)"},fbDyn).textContent=noteName(ev);
   }
+}
+function graceMark(gr){ // where the quick grace note goes, shown smaller than the main note
+  const si=STRINGS.findIndex(s=>s.n===gr.str), open=gr.semis===0, y=open?46:fy(gr.semis)-6, x=open?FB.x[si]:sx(si,y);
+  el("circle",{cx:x,cy:y,r:10,fill:"var(--surface)",stroke:"var(--rosin)","stroke-width":2},fbDyn);
+  el("text",{x,y:y+4,"text-anchor":"middle","font-size":11,"font-weight":800,fill:"var(--rosin)"},fbDyn).textContent=gr.fing.f;
+  el("text",{x:x+(si<2?-26:26),y:y+4,"text-anchor":"middle","font-size":11,"font-weight":800,fill:"var(--rosin)"},fbDyn).textContent="grace";
 }
 function ghost(ev){
   const si=STRINGS.findIndex(s=>s.n===ev.str);
@@ -1115,7 +1182,7 @@ function select(i,userAction){
   const k=orderPosFor(i);
   $("pos").textContent=`Note ${noteNoInOrder[k]||1} of ${noteNoInOrder[noteNoInOrder.length-1]||0}`;
   $("fBar").textContent=barLabel(ev);
-  const arts=[ev.stacc&&"staccato",ev.ten&&"tenuto",ev.accent&&"accent",ev.trill&&"trill"].filter(Boolean);
+  const arts=[ev.grace&&(ev.grace.length>1?"grace notes first":"grace note first"),ev.after&&"grace notes at the end",ev.stacc&&"staccato",ev.ten&&"tenuto",ev.accent&&"accent",ev.trill&&"trill"].filter(Boolean);
   const lenTxt=(ev.dot?"dotted ":"")+LEN_NAME[ev.len]+` · ${fmtBeats(ev.beats)}`+(arts.length?` · ${arts.join(", ")}`:"");
   $("fLen").textContent=lenTxt;
   if(ev.rest){
@@ -1132,7 +1199,12 @@ function select(i,userAction){
     : "";
   const accHint = ev.accent ? "Accent: start the note with a little extra weight from your index finger." : "";
   const trHint = ev.trill ? `Trill: move quickly between ${noteName(ev)} and the note above, ${upperNeighbor(ev).name}, by tapping the next finger up, then settle back on ${noteName(ev)}.` : "";
-  $("hint").textContent=[trHint,hintFor(i),artHint,accHint].filter(Boolean).join(" ");
+  const gNames=l=>{ const a=l.map(g=>noteName(g)); return a.length>1?a.slice(0,-1).join(", ")+" and "+a[a.length-1]:a[0]; };
+  const gr=ev.grace, g0=gr&&gr[0], grHint = !gr ? "" : gr.length===1
+      ? `Grace note: start with a very quick ${noteName(g0)} (${g0.fing.say.toLowerCase()}${g0.str!==ev.str?" on the "+g0.str+" string":""}), then ${g0.str===ev.str&&ev.semis<g0.semis?"lift the finger for":"go straight to"} ${noteName(ev)}, all in the same bow.`
+      : `Grace notes: start with very quick ${gNames(gr)}, then go to ${noteName(ev)}, all in the same bow.`;
+  const afHint = ev.after ? `${ev.trill?"End the trill with":"At the end of the note, add"} the quick grace notes ${gNames(ev.after)}, in the same bow${nextNote(i)?", then go on to "+noteName(nextNote(i)):""}.` : "";
+  $("hint").textContent=[grHint,trHint,afHint,hintFor(i),artHint,accHint].filter(Boolean).join(" ");
   setBow(ev); drawBoard(i); nextLine(i);
   if(!playing) animateBow(ev,600);
 }
@@ -1226,7 +1298,10 @@ function click(t,accent){
 function spb(){ return 60/(+$("tempo").value); }
 function previewNote(i){
   const ev=evs[i]; if(!ev||ev.rest) return; audio();
-  playTone(freq(ev.midi),ctx.currentTime+.02,Math.min(1.6,ev.beats*spb()),false);
+  let t=ctx.currentTime+.02; (ev.grace||[]).forEach(gr=>{ playTone(freq(gr.midi),t,.09,t>ctx.currentTime+.03,true,false); t+=.09; });
+  const d=Math.min(1.6,ev.beats*spb()), ad=ev.after?ev.after.length*.08:0;
+  playTone(freq(ev.midi),t,d-ad,!!ev.grace,!!ev.after); t+=d-ad;
+  (ev.after||[]).forEach((gr,k)=>{ playTone(freq(gr.midi),t,.08,true,k<ev.after.length-1,false); t+=.08; });
 }
 function orderPosFor(i){
   if(order[opos]===i) return opos;
@@ -1282,8 +1357,15 @@ function pump(){
       const sounding = lastE.stacc&&lastE.ten ? total-Math.min(.05,lastDur*.12)
                      : lastE.stacc ? Math.max(.06,total-gap)
                      : lastE.ten ? total*1.03 : total;
-      if(ev.trill) playTrill(ev,run.t,dur,sounding,legato,beat);
-      else playTone(freq(ev.midi),run.t,sounding,ev.inSlur&&!ev.slurStart,legato,ev.accent);
+      let t0=run.t, snd=sounding, joined=ev.inSlur&&!ev.slurStart;
+      if(ev.grace){ // quick, on the beat, slurred into the main note
+        const n=ev.grace.length, gd=Math.min(n>1?.085:.1, Math.max(.055,beat*(n>1?.13:.18)), snd*.45/n);
+        ev.grace.forEach(gr=>{ playTone(freq(gr.midi),t0,gd,joined,true,false); t0+=gd; snd-=gd; joined=true; }); }
+      const af=lastE.after, ad=af?Math.min(Math.min(.09,Math.max(.055,beat*.14)), snd*.4/af.length):0, aTot=af?ad*af.length:0;
+      if(ev.trill) playTrill(ev,t0,dur-(t0-run.t)-aTot,snd-aTot,legato||!!af,beat);
+      else playTone(freq(ev.midi),t0,snd-aTot,joined,legato||!!af,ev.accent);
+      if(af){ let ta=t0+snd-aTot; // grace notes at the end of the note, in the same bow
+        af.forEach((gr,k)=>{ playTone(freq(gr.midi),ta,ad,true,k<af.length-1||legato,false); ta+=ad; }); }
     }
     if(pressed("clickBtn")){ const p=ev.off||0; for(let b=Math.ceil(p-1e-6); b<p+ev.beats-1e-6; b++) click(run.t+(b-p)*beat, ((b%num)+num)%num===0); }
     run.t+=dur; run.k++;
@@ -1340,7 +1422,9 @@ function edSong(){
     tempo:+$("edTempo").value||80, num:($("edNum").value.trim()||"★").slice(0,3), book:$("edBook").value, notes:ta.value, tip:$("edTip").value.trim(), mine:true };
 }
 function edCheck(s,quiet){
-  const {evs:ev,errs}=parseSong(s.notes,s.key); const msg=$("edmsg");
+  const {evs:ev,errs:all}=parseSong(s.notes,s.key); const msg=$("edmsg");
+  const PEND="grace note with no note after it", errs=all.filter(e=>e!==PEND);
+  if(!errs.length && all.length){ msg.className=""; msg.textContent="Grace note added. Now tap the note it leads into."; return false; }
   if(errs.length){ msg.className="err"; msg.textContent="I couldn't read: "+errs.slice(0,6).join(", ")+(errs.length>6?" …":"")+". Check the pitch, octave and length letter."; return false; }
   if(!ev.length){ msg.className=""; msg.textContent="Pick a length, then tap a note to start."; return false; }
   const per=BEATS[s.time]||4, bars={}; ev.forEach(e=>bars[e.bar]=(bars[e.bar]||0)+e.beats);
@@ -1395,22 +1479,26 @@ function buildGrid(){
       b.innerHTML=`${nm.replace("#","♯").replace("b","♭")}<small>${oct}</small>`;
       b.title=`${nm.replace("#","♯").replace("b","♭")}${oct} on the ${st.n} string, ${FINGER[k].say.toLowerCase()}`;
       b.onclick=()=>{
-        const auto=STRINGS.slice().reverse().find(x=>midi>=x.midi);
-        let tok=nm+oct+(edDot?"d":"")+edLen+(auto.n!==st.n?"@"+st.n:"")+(edBow?":"+edBow:"");
-        insertTok(tok); setBowPick("");
-        audio(); playTone(freq(midi),ctx.currentTime+.02,Math.min(1.2,LEN[edLen]*(edDot?1.5:1)*spb()),false);
+        const auto=STRINGS.slice().reverse().find(x=>midi>=x.midi), gr=edLen==="g";
+        let tok = gr ? nm+oct+"g"+(auto.n!==st.n?"@"+st.n:"")
+                     : nm+oct+(edDot?"d":"")+edLen+(auto.n!==st.n?"@"+st.n:"")+(edBow?":"+edBow:"");
+        insertTok(tok); if(!gr) setBowPick("");
+        audio(); playTone(freq(midi),ctx.currentTime+.02,gr?.1:Math.min(1.2,LEN[edLen]*(edDot?1.5:1)*spb()),false);
+        if(gr) setLen(edPrevLen);
       };
       g.appendChild(b);
     });
   });
 }
 function setBowPick(v){ edBow=v; document.querySelectorAll(".bowpick").forEach(b=>b.setAttribute("aria-pressed",b.dataset.bow===v?"true":"false")); }
-document.querySelectorAll("#lenBtns [data-len]").forEach(b=>b.onclick=()=>{ edLen=b.dataset.len;
-  document.querySelectorAll("#lenBtns [data-len]").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false")); });
+let edPrevLen="q";
+function setLen(l){ if(l!=="g") edPrevLen=l; edLen=l;
+  document.querySelectorAll("#lenBtns [data-len]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.len===l?"true":"false")); }
+document.querySelectorAll("#lenBtns [data-len]").forEach(b=>b.onclick=()=>setLen(b.dataset.len));
 $("dotBtn").onclick=()=>{ edDot=!edDot; $("dotBtn").setAttribute("aria-pressed",edDot?"true":"false"); };
 document.querySelectorAll(".bowpick").forEach(b=>b.onclick=()=>setBowPick(b.dataset.bow));
 document.querySelectorAll("[data-tok]").forEach(b=>b.onclick=()=>{
-  const t=b.dataset.tok; insertTok(t==="REST" ? "R"+(edDot?"d":"")+edLen : t); });
+  const t=b.dataset.tok; insertTok(t==="REST" ? "R"+(edDot?"d":"")+(edLen==="g"?edPrevLen:edLen) : t); });
 $("slurBtn").onclick=()=>insertTok(slurOpen()?")":"(");
 function markPrev(mark){ // add a mark (~ . > -) to the note just before the cursor
   const v=ta.value, p=caret==null?v.length:Math.min(caret,v.length), before=v.slice(0,p).replace(/\s+$/,""), m=before.match(/(\S+)$/);
